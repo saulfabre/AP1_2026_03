@@ -37,49 +37,49 @@
           Crear libro
         </a>
       </div>
-      </div>
-      <div class="table mt-3">
-        <table class="table table-bordered text-center">
-          <thead>
+    </div>
+    <div class="table mt-3">
+      <table class="table table-bordered text-center">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Título</th>
+            <th scope="col">Autor</th>
+            <th scope="col">Año</th>
+            <th scope="col">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var Libro in Libros)
+          {
             <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Título</th>
-              <th scope="col">Autor</th>
-              <th scope="col">Año</th>
-              <th scope="col">Acciones</th>
+              <td>@Libro.LibroId</td>
+              <td>@Libro.Titulo</td>
+              <td>@Libro.Autor</td>
+              <td>@Libro.AnoPublicacion</td>
+              <td>
+                <a href="/Libros/Details/@Libro.LibroId" type="button" class="btn btn-primary"><i
+                  class="bi bi-info-circle-fill"></i>
+                  Ver
+                </a>
+                <a href="/Libros/Edit/@Libro.LibroId" type="button" class="btn btn-success"><i
+                  class="bi bi-pencil-square"></i>
+                  Editar
+                </a>
+                <a href="/Libros/Delete/@Libro.LibroId" type="button" class="btn btn-danger"><i
+                  class="bi bi-x-circle-fill"></i>
+                  Eliminar
+                </a>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            @foreach (var Libro in Libros)
-            {
-              <tr>
-                <td>@Libro.LibroId</td>
-                <td>@Libro.Titulo</td>
-                <td>@Libro.Autor</td>
-                <td>@Libro.AnoPublicacion</td>
-                <td>
-                  <a href="/Libros/Details/@Libro.LibroId" type="button" class="btn btn-primary"><i
-                    class="bi bi-info-circle-fill"></i>
-                    Ver
-                  </a>
-                  <a href="/Libros/Edit/@Libro.LibroId" type="button" class="btn btn-success"><i
-                    class="bi bi-pencil-square"></i>
-                    Editar
-                  </a>
-                  <a href="/Libros/Delete/@Libro.LibroId" type="button" class="btn btn-danger"><i
-                    class="bi bi-x-circle-fill"></i>
-                    Eliminar
-                  </a>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    
+          }
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>
-  
+
 @code {
   public List<Libros> Libros { get; set; } = new List<Libros>();
   private string filtro = "Id";

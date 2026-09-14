@@ -30,7 +30,8 @@
                         </label>
                         <InputDate @bind-Value="Libro.AnoPublicacion" class="form-control" disabled></InputDate>
                     </div>
-                    <button type="button" class="btn btn-danger" @onclick="EliminarLibro"><i class="bi bi-x-circle-fill"></i>
+                    <button type="button" class="btn btn-danger" @onclick="EliminarLibro"><i
+                        class="bi bi-x-circle-fill"></i>
                         Eliminar
                     </button>
                     <a href="Libros/Index" type="button" class="btn btn-light ms-2">
@@ -56,16 +57,17 @@ else
         Libro = await LibroService.Buscar(LibroId);
     }
 
-    public async Task EliminarLibro() 
+    public async Task EliminarLibro()
     {
-        if (await LibroService.Eliminar(LibroId)) 
+        if (await LibroService.Eliminar(LibroId))
         {
             Volver();
-            ToastService.ShowSuccess("El libro se elimino correctamente", "Libro eliminado"); 
+            ToastService.ShowSuccess("El libro se elimino correctamente", "Libro eliminado");
         }
     }
 
-    public void Volver() {
+    public void Volver()
+    {
         navigationManager.NavigateTo("/Libros/Index");
     }
 }
