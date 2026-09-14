@@ -3,15 +3,15 @@
 @inject LibrosService LibroService
 
 <div class="card">
-  <div class="card-header">
-    Libros
+  <div class="card-header bg-white text-black">
+    <h4 class="mb-0 fw-bold" <i class="bi bi-book me-2"/>Consulta de Libros</h4> 
   </div>
   <div class="card-body">
     <div class="row mb-3 align-items-end">
       <div class="col-auto">
         <div class="dropdown">
-          <button class="btn btn-outline-secondary text-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            Filtrar por
+          <button class="btn btn-outline-secondary text-dark dropdown-toggle type="button" data-bs-toggle="dropdown">
+            Filtrar por @filtro
           </button>
           <div class="dropdown-menu">
             <button class="dropdown-item" type="button" @onclick='() => filtro = "Id"'>
@@ -46,7 +46,7 @@
             <th scope="col">Título</th>
             <th scope="col">Autor</th>
             <th scope="col">Año</th>
-            <th scope="col">Acciones</th>
+            <th scope="col">Opciones</th>
           </tr>
         </thead>
         <tbody>
@@ -64,7 +64,7 @@
                 </a>
                 <a href="/Libros/Edit/@Libro.LibroId" type="button" class="btn btn-success"><i
                   class="bi bi-pencil-square"></i>
-                  Editar
+                  Modificar
                 </a>
                 <a href="/Libros/Delete/@Libro.LibroId" type="button" class="btn btn-danger"><i
                   class="bi bi-x-circle-fill"></i>

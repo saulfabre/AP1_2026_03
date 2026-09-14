@@ -7,8 +7,8 @@
 {
 
     <div class="card">
-        <div class="card-header">
-            Detalles del libro
+        <div class="card-header bg-white text-black">
+            <h4 class="mb-0 fw-bold text-center"><i class="bi bi-book me-2"></i>Ver libro</h4>
         </div>
         <div class="card-body">
             <div class="mb-3">
@@ -28,7 +28,7 @@
                         <InputDate @bind-Value="Libro.AnoPublicacion" class="form-control" disabled></InputDate>
                     </div>
                     <a href="/Libros/Edit/@Libro.LibroId" type="submit" class="btn btn-success"><i class="bi bi-plus"></i>
-                        Actualizar
+                        Modificar
                     </a>
                     <a href="Libros/Index" type="button" class="btn btn-light ms-2">
                         Cancelar
