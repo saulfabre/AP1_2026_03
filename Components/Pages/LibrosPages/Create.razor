@@ -1,0 +1,78 @@
+@page "/Libros/Create"
+
+@using RegistroLibrosBlazor.Extensors
+
+@inject LibrosService LibroService
+@inject ToastService ToastService
+
+<EditForm Model="Libro" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+        <div class="card-header">
+            Registrar libro
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">
+                    Título
+                </label>
+                <InputText @bind-Value="Libro.Titulo" class="form-control" ></InputText> <ValidationMessage For="@(() => Libro.Titulo)" />
+                <div class="mb-3">
+                    <label class="form-label">
+                        Autor
+                    </label>
+                    <InputText @bind-Value="Libro.Autor" class="form-control"></InputText> <ValidationMessage For="@(() => Libro.Autor)" />
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Año de publicación
+                        </label>
+                        <InputDate @bind-Value="Libro.AnoPublicacion" class="form-control"></InputDate> <ValidationMessage For="@(() => Libro.AnoPublicacion)" />
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-plus"></i>
+                        Guardar
+                    </button>
+                    <a href="Libros/Index" type="button" class="btn btn-light ms-2">
+                        Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Libros Libro { get; set; } = new Libros();
+    private bool Existe = false;
+
+    public void Nuevo()
+    {
+        Libro = new Libros();
+        Existe = false;
+    }
+
+    public async Task<bool> Validar()
+    {
+        Existe = await LibroService.Existe(Libro.Titulo);
+        return !Existe;
+    }
+
+    public async Task Guardar()
+    {   
+        if (!await Validar())
+        {
+            ToastService.ShowWarning("Ya existe un líbro con ese titulo", "Libro duplicado");
+            return;
+        }
+        var guardo = await LibroService.Guardar(Libro);
+        if (guardo)
+        {   
+            ToastService.ShowSuccess("El libro se guardó correctamente", "Libro guardado" );
+            Nuevo();
+        }
+        else
+        {
+            ToastService.ShowError("No se pudo guardar el libro", "Error");
+        }
+    }
+}

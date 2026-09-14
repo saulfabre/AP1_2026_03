@@ -1,0 +1,84 @@
+@page "/Libros/Edit/"
+@page "/Libros/Edit/{LibroId:int}"
+@using RegistroLibrosBlazor.Extensors
+
+@inject LibrosService LibroService
+@inject ToastService ToastService
+
+<EditForm Model="Libro" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+
+    <div class="card">
+        <div class="card-header">
+            Editar libro
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">
+                    Título
+                </label>
+                <InputText @bind-Value="Libro.Titulo" class="form-control"></InputText> <ValidationMessage For="@(() => Libro.Titulo)" />
+                <div class="mb-3">
+                    <label class="form-label">
+                        Autor
+                    </label>
+                    <InputText @bind-Value="Libro.Autor" class="form-control"></InputText> <ValidationMessage For="@(() => Libro.Autor)" />
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Año de publicación
+                        </label>
+                        <InputDate @bind-Value="Libro.AnoPublicacion" class="form-control"></InputDate> <ValidationMessage For="@(() => Libro.AnoPublicacion)" />
+                    </div>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-plus"></i>
+                        Actualizar
+                    </button>
+                    <a href="Libros/Index" type="button" class="btn btn-light ms-2">
+                        Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? LibroId { get; set; }
+    public Libros Libro { get; set; } = new Libros();
+    private bool Existe = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (LibroId.HasValue)
+        {
+        
+            Libro.LibroId = LibroId.Value;
+            await Buscar();
+        }
+    }
+
+    public void Nuevo()
+    {
+        Libro = new Libros();
+        Existe = false;
+    }
+
+    public async Task Buscar()
+    {
+        var libroEncontrado = await LibroService.Buscar(Libro.LibroId);
+
+        if (libroEncontrado != null)
+        {
+            Libro = libroEncontrado;
+        }
+    }
+
+    public async Task Guardar()
+    {
+        {
+            await LibroService.Modificar(Libro);
+            Nuevo();
+            ToastService.ShowSuccess("El libro se actualizó correctamente", "Libro actualizado");  
+        }
+    }
+}

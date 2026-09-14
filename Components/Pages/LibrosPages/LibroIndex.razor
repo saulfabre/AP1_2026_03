@@ -1,0 +1,115 @@
+@page "/Libros/Index"
+
+@inject LibrosService LibroService
+
+<div class="card">
+  <div class="card-header">
+    Libros
+  </div>
+  <div class="card-body">
+    <div class="row mb-3 align-items-end">
+      <div class="col-auto">
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary text-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            Filtrar por
+          </button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" type="button" @onclick='() => filtro = "Id"'>
+              Id
+            </button>
+            <button class="dropdown-item" type="button" @onclick='() => filtro = "Autor"'>
+              Autor
+            </button>
+            <button class="dropdown-item" type="button" @onclick='() => filtro = "Titulo"'>
+              Título
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group">
+          <input type="text" class="form-control border-secondary" placeholder="Buscar" @bind="valorFiltro" />
+          <button class="btn btn-outline-primary" type="button" @onclick="Buscar">Buscar</button>
+        </div>
+      </div>
+      <div class="col-auto ms-auto">
+        <a href="/Libros/Create" type="button" class="btn btn-success" @onclick=""><i class="bi bi-plus"></i>
+          Crear libro
+        </a>
+      </div>
+      </div>
+      <div class="table mt-3">
+        <table class="table table-bordered text-center">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Título</th>
+              <th scope="col">Autor</th>
+              <th scope="col">Año</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var Libro in Libros)
+            {
+              <tr>
+                <td>@Libro.LibroId</td>
+                <td>@Libro.Titulo</td>
+                <td>@Libro.Autor</td>
+                <td>@Libro.AnoPublicacion</td>
+                <td>
+                  <a href="/Libros/Details/@Libro.LibroId" type="button" class="btn btn-primary"><i
+                    class="bi bi-info-circle-fill"></i>
+                    Ver
+                  </a>
+                  <a href="/Libros/Edit/@Libro.LibroId" type="button" class="btn btn-success"><i
+                    class="bi bi-pencil-square"></i>
+                    Editar
+                  </a>
+                  <a href="/Libros/Delete/@Libro.LibroId" type="button" class="btn btn-danger"><i
+                    class="bi bi-x-circle-fill"></i>
+                    Eliminar
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    
+  </div>
+</div>
+  
+@code {
+  public List<Libros> Libros { get; set; } = new List<Libros>();
+  private string filtro = "Id";
+  private string valorFiltro = "";
+
+  protected override async Task OnInitializedAsync()
+  {
+    Libros = await LibroService.GetList(l => true);
+  }
+
+  private async Task Buscar()
+  {
+    if (valorFiltro.Trim() != "")
+    {
+      if (filtro == "Id" && int.TryParse(valorFiltro, out int LibroId))
+      {
+        Libros = await LibroService.GetList(l => l.LibroId == LibroId);
+      }
+      else if (filtro == "Autor")
+      {
+        Libros = await LibroService.GetList(l => l.Autor.Contains(valorFiltro));
+      }
+      else if (filtro == "Titulo")
+      {
+        Libros = await LibroService.GetList(l => l.Titulo.Contains(valorFiltro));
+      }
+    }
+    else
+    {
+      Libros = await LibroService.GetList(l => true);
+    }
+  }
+}

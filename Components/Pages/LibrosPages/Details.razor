@@ -1,0 +1,55 @@
+@page "/Libros/Details"
+@page "/Libros/Details/{LibroId:int}"
+
+@inject LibrosService LibroService
+
+@if (Libro != null)
+{
+
+    <div class="card">
+        <div class="card-header">
+            Detalles del libro
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">
+                    Título
+                </label>
+                <InputText @bind-Value="Libro.Titulo" class="form-control" disabled></InputText>
+                <div class="mb-3">
+                    <label class="form-label">
+                        Autor
+                    </label>
+                    <InputText @bind-Value="Libro.Autor" class="form-control" disabled></InputText>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            Año de publicación
+                        </label>
+                        <InputDate @bind-Value="Libro.AnoPublicacion" class="form-control" disabled></InputDate>
+                    </div>
+                    <a href="/Libros/Edit/@Libro.LibroId" type="submit" class="btn btn-success"><i class="bi bi-plus"></i>
+                        Actualizar
+                    </a>
+                    <a href="Libros/Index" type="button" class="btn btn-light ms-2">
+                        Cancelar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Libro no encontrado</p>
+}
+
+@code {
+    [Parameter]
+    public int LibroId { get; set; }
+    public Libros? Libro { get; set; } = new Libros();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Libro = await LibroService.Buscar(LibroId);
+    }
+}
