@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RegistroLibrosBlazor.Components;
+using RegistroLibrosBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddDbContextFactory<Contexto>(o => 
     o.UseSqlite(builder.Configuration.GetConnectionString("ConStr")));
+
+builder.Services.AddScoped<LibrosService>();
 
 
 var app = builder.Build();
