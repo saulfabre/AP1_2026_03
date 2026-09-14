@@ -100,11 +100,11 @@
       }
       else if (filtro == "Autor")
       {
-        Libros = await LibroService.GetList(l => l.Autor.Contains(valorFiltro));
+        Libros = await LibroService.GetList(l => l.Autor.Contains(valorFiltro.ToLower()));
       }
       else if (filtro == "Titulo")
       {
-        Libros = await LibroService.GetList(l => l.Titulo.Contains(valorFiltro));
+        Libros = await LibroService.GetList(l => l.Titulo.Contains(valorFiltro.ToLower()));
       }
     }
     else
