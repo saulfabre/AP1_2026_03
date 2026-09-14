@@ -47,16 +47,16 @@ public class LibrosService(
             .ToListAsync();
     }
 
-    public async Task<bool> Existe(int libroId)
+    public async Task<bool> Existe(string titulo)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         return await contexto.Libros
-            .AnyAsync(l => l.LibroId == libroId);
+            .AnyAsync(l => l.Titulo == titulo);
     }
 
     public async Task<bool> Guardar(Libros libro)
     {
-        if (!await Existe(libro.LibroId))
+        if (!await Existe(libro.Titulo))
         {
             return await Insertar(libro);
         }
