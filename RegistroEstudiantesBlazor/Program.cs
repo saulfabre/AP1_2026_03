@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using RegistroEstudiantesBlazor.Components;
+using RegistroEstudiantesBlazor.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(
+    builder.Configuration.GetConnectionString("ConStr")
+));
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
