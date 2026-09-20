@@ -1,6 +1,7 @@
 @page "/Estudiantes/Create"
 @rendermode InteractiveServer
 @inject EstudiantesServices EstudianteService
+@inject ToastService ToastService
 
 <EditForm Model="Estudiante" OnValidSubmit="Guardar">
     <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -50,16 +51,18 @@
     {
         if (await EstudianteService.Existe(Estudiante.Nombres))
         {
+            ToastService.ShowWarning("Ya existe un estudiante con ese nombre.", "Estudiante duplicado.");
             return;
         }
         var estudianteGuardado = await EstudianteService.Guardar(Estudiante);
         if (estudianteGuardado)
         {
+            ToastService.ShowSuccess("Estudiante creado correctamente.", "Estudiante creado.");
             Estudiante = new Estudiantes();
         }
         else
         {
-            return;
+            ToastService.ShowError("No se pudo crear el estudiante.", "Error al crear.");
         }
     }
 }

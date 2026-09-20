@@ -1,6 +1,8 @@
 @page "/Estudiantes/Edit/{EstudianteId:int}"
 @rendermode InteractiveServer
 @inject EstudiantesServices EstudianteService
+@inject ToastService ToastService
+@inject NavigationManager Navigation
 
 @if (Estudiante != null)
 {
@@ -45,6 +47,10 @@
         </div>
     </EditForm>
 }
+else
+{
+    <p>Estudiante no encontrado</p>
+}
 
 @code {
 
@@ -58,16 +64,20 @@
     }
     private async Task Modificar()
     {
-        if (Estudiante != null)
+        if (Estudiante == null)
         {
-            var estudianteModificado = await EstudianteService.Modificar(Estudiante);
-            if (estudianteModificado)
-            {
-                Estudiante = new Estudiantes();
-            }
+            ToastService.ShowError("No se encontró el estudiante.","Error al buscar.");
+            return;
+        }
+        var estudianteModificado = await EstudianteService.Modificar(Estudiante);
+        if (estudianteModificado)
+        {
+            ToastService.ShowSuccess("Estudiante modificado correctamente.", "Estudiante modificado.");
+            Navigation.NavigateTo("/Estudiantes/Index");
         }
         else
         {
+            ToastService.ShowError("No se pudo modificar el estudiante.", "Error al modificar.");
             return;
         }
     }
