@@ -45,8 +45,7 @@
 
 @code {
 
-    public Estudiantes Estudiante { get; set; } = new Estudiantes();
-
+    private Estudiantes Estudiante { get; set; } = new Estudiantes();
     private async Task Guardar()
     {
         if (await EstudianteService.Existe(Estudiante.Nombres))

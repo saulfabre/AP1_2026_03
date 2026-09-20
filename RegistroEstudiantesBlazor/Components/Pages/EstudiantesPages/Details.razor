@@ -51,7 +51,7 @@ else
 
     [Parameter]
     public int EstudianteId { get; set; }
-    public Estudiantes? Estudiante { get; set ;} = new Estudiantes();
+    private Estudiantes? Estudiante { get; set ;} = new Estudiantes();
 
     protected override async Task OnInitializedAsync()
     {
