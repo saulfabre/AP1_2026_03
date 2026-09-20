@@ -1,6 +1,125 @@
 ﻿@page "/Estudiantes/Index"
 @rendermode InteractiveServer
+@inject EstudiantesServices EstudianteService
+
+<div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between" style="height: 58px;">
+        <h5 class="mb-0">Estudiantes</h5>
+        <a class="btn btn-primary" href="/Estudiantes/Create">
+            <i class="bi bi-plus"></i>
+            Registrar
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="d-flex align-items-center gap-4">
+            <div class="dropdown w-auto">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        style="color: var(--bs-secondary-color); border: var(--bs-border-width) solid var(--bs-border-color);">
+                    Filtro
+                </button>
+                <ul class="dropdown-menu">
+                    <li><button class="dropdown-item" type="button" @onclick='() => filtro = "Id"'">ID</button></li>
+                    <li><button class=" dropdown-item" type="button" @onclick='() => filtro = "Nombres"'>Nombres</button>
+                    </li>
+                    <li><button class="dropdown-item" type="button"
+                                    @onclick='() => filtro = "Dirección"'>Dirección</button></li>
+                        <li><button class="dropdown-item" type="button" @onclick='() => filtro = "Email"'>Email</button>
+                        </li>
+                        <li><button class="dropdown-item" type="button" @onclick='() => filtro = "Fecha nacimiento"'>Fecha
+                            nacimiento</button></li>
+                        </ul>
+                    </div>
+                    <div class="input-group w-auto">
+                        <input type="text" class="form-control" placeholder="Buscar..." @bind="valorFiltro">
+                        <button class="btn btn-outline-primary" type="button" @onclick="Buscar">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <table class="table table-bordered mt-3 text-center align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Nombres</th>
+                            <th scope="col">Dirección</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Fecha Nacimiento</th>
+                            <th scope="col">Opciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Estudiante in Estudiantes)
+                        {
+                            <tr>
+                                <td>@Estudiante.EstudianteId</td>
+                                <td>@Estudiante.Nombres</td>
+                                <td>@Estudiante.Direccion</td>
+                                <td>@Estudiante.Email</td>
+                                <td>@Estudiante.FechaNacimiento</td>
+                                <td>
+                                    <div class="d-flex  justify-content-center gap-3">
+                                        <a class="btn btn-primary" href="Estudiantes/Details/@Estudiante.EstudianteId">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                    
+                                        </a>
+                                        <a class="btn btn-success" href="Estudiantes/Edit/@Estudiante.EstudianteId">
+                                            <i class="bi bi-pencil-square"></i>
+                                    
+                                        </a>
+                                        <a class="btn btn-danger" href="/Estudiantes/Delete/@Estudiante.EstudianteId">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                    
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
+        </div>
 
 @code {
 
+    private List<Estudiantes> Estudiantes { get; set; } = new List<Estudiantes>();
+    private string filtro = "";
+    private string valorFiltro = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Estudiantes = await EstudianteService.GetList(e => true);
+    }
+
+    private async Task Buscar()
+    {
+        if (valorFiltro.Trim() != "")
+        {
+            if (filtro == "Id" && int.TryParse(valorFiltro, out int EstudianteId))
+            {
+                Estudiantes = await EstudianteService.GetList(e => e.EstudianteId == EstudianteId);
+            }
+            else if (filtro == "Nombres")
+            {
+                Estudiantes = await EstudianteService.GetList(e => e.Nombres.ToLower().Contains(valorFiltro.ToLower()));
+            }
+            else if (filtro == "Dirección")
+            {
+                Estudiantes = await EstudianteService.GetList(e => e.Direccion.ToLower().Contains(valorFiltro.ToLower()));
+            }
+            else if (filtro == "Email")
+            {
+                Estudiantes = await EstudianteService.GetList(e => e.Email.ToLower().Contains(valorFiltro.ToLower()));
+            }
+            else if (filtro == "Fecha nacimiento" && DateOnly.TryParse(valorFiltro, out DateOnly FechaNacimiento))
+            {
+                Estudiantes = await EstudianteService.GetList(e => e.FechaNacimiento == FechaNacimiento);
+            }
+        }
+        else
+        {
+            Estudiantes = await EstudianteService.GetList(e => true);
+        }
+    }
 }
