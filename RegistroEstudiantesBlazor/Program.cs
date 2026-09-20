@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RegistroEstudiantesBlazor.Components;
 using RegistroEstudiantesBlazor.Context;
+using RegistroEstudiantesBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddBlazorBootstrap();
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(
     builder.Configuration.GetConnectionString("ConStr")
 ));
+builder.Services.AddScoped<EstudiantesServices>();
 
 var app = builder.Build();
 
