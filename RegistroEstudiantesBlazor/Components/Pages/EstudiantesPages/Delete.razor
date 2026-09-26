@@ -1,0 +1,78 @@
+@page "/Estudiantes/Delete/{EstudianteId:int}"
+@rendermode InteractiveServer
+@inject EstudiantesServices EstudianteService
+@inject NavigationManager NavigationManager
+@inject ToastService ToastService
+
+@if (Estudiante != null) {
+<div class="card">
+    <div class="card-header d-flex align-items-center" style="height: 58px;">
+        <h5 class="mb-0">
+            Eliminar estudiante
+        </h5>
+    </div>
+    <div class="card-body d-flex flex-column gap-2">
+        <label class="form-label mb-0">
+            Nombres
+        </label>
+        <InputText @bind-Value="Estudiante.Nombres" class="form-control" disabled></InputText>
+    </div>
+    <div class="card-body d-flex flex-column gap-2">
+        <label class="form-label mb-0">
+            Dirección
+        </label>
+        <InputText @bind-Value="Estudiante.Direccion" class="form-control" disabled></InputText>
+    </div>
+    <div class="card-body d-flex flex-column gap-2">
+        <label class="form-label mb-0">
+            Email
+        </label>
+        <InputText @bind-Value="Estudiante.Email" class="form-control" disabled></InputText>
+    </div>
+    <div class="card-body d-flex flex-column gap-2">
+        <label class="form-label mb-0">
+            Fecha nacimiento
+        </label>
+        <InputDate @bind-Value="Estudiante.FechaNacimiento" class="form-control" disabled></InputDate>
+    </div>
+    <div class="d-flex p-3 pt-0 gap-3">
+        <button class="btn btn-danger w-auto" @onclick="Eliminar">
+                    <i class="bi bi-pencil-square"></i>
+                    Eliminar
+                </button>
+                <a class="btn btn-warning w-auto" href="/Estudiantes/Index">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+    </div>
+</div>
+}
+else
+{
+    <p>Estudiante no encontrado</p>
+}
+
+@code {
+
+    [Parameter]
+    public int EstudianteId { get; set; }
+    private Estudiantes? Estudiante { get; set; } = new Estudiantes();
+
+    protected override async Task OnInitializedAsync() 
+    {
+        Estudiante = await EstudianteService.Buscar(EstudianteId);
+    }
+
+    private async Task Eliminar()
+    {
+        if (await EstudianteService.Eliminar(EstudianteId))
+        {
+            ToastService.ShowSuccess("El estudiante se elimino correctamente.", "Estudiante eliminado.");
+            NavigationManager.NavigateTo("/Estudiantes/Index");
+        }
+        else
+        {
+            ToastService.ShowError("El estudiante no se elimino correctamente.", "Error al eliminar estudiante.");
+        }
+    }
+}
