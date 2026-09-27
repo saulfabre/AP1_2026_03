@@ -1,0 +1,82 @@
+@page "/"
+
+@rendermode InteractiveServer
+
+<PageTitle>Index</PageTitle>
+
+@*Encabezado de la consulta de libros*@
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Consulta de Libros</h5>
+
+            @*Bóton para crear un nuevo libro*@
+            <a href="" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+                Crear
+            </a>
+        </div>
+
+        @*Cuerpo de la consulta de libros*@
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-4">
+                @*Filtrar por*@
+                <div>
+                    <label class="form-label"><strong>Filtrar por</strong></label>
+                    <select class="form-select">
+                        <option value="">ID</option>
+                        <option value="">Título</option>
+                        <option value="">Autor</option>
+                        <option value="">Año</option>
+                    </select>
+                </div>
+
+                @*Búsqueda*@
+                <div>
+                    <label class="form-label"><strong>Búsqueda</strong></label>
+                    <input class="form-control" placeholder="Buscar..." />
+                </div>
+            </div>
+
+            @*Tabla para consultar información de libros*@
+            <QuickGrid Items="@Libros.AsQueryable()" Class="table table-bordered mt-3">
+                <PropertyColumn Property="@(l => l.LibroId)" Title="ID" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Titulo)" Title="Título" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Autor)" Title="Autor" Sortable="true" />
+                <PropertyColumn Property="@(l => l.AnoPublicacion)" Title="Año Publicación" Format="yyyy-MM-dd"
+                                Sortable="true" />
+
+                @*Opciones*@
+                <TemplateColumn Title="Opciones">
+                    <a href="" class="btn btn-warning">Editar</a>
+                    <a href="" class="btn btn-danger">Eliminar</a>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+
+        <div class="card-footer">
+            <p class="mb-0"><strong>Cantidad: </strong></p>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    public List<Libros> Libros { get; set; } = new()
+    {
+        new Libros
+        {
+            LibroId = 2,
+            Titulo = "ZZZZ",
+            Autor = "Juanito",
+            AnoPublicacion = new DateOnly(2026, 09, 27)
+        },
+        new Libros
+        {
+            LibroId = 1,
+            Titulo = "AAAA",
+            Autor = "Juanito",
+            AnoPublicacion = new DateOnly(2026, 09, 27)
+        },
+    };
+}
