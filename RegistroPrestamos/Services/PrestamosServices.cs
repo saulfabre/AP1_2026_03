@@ -20,7 +20,7 @@ public class PrestamosServices(IDbContextFactory<Contexto> contextFactory
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
 
-        return await contexto.Prestamos.Where(criterio).AsNoTracking().ToListAsync();
+        return await contexto.Prestamos.Include(p => p.Estudiante).Include(p => p.Libro).Where(criterio).AsNoTracking().ToListAsync();
     }
 
     public async Task<bool> Existe(int prestamoId)
