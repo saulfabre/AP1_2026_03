@@ -13,6 +13,8 @@ public class Prestamos
 
     public DateOnly FechaDevolucion { get; set; }
 
+    public bool Devuelto { get; set; }
+
     [ForeignKey("LibroId")]
     public int LibroId { get; set ; }
 
