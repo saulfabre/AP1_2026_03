@@ -56,6 +56,18 @@
                 <PropertyColumn Property="@(l => l.AnoPublicacion)" Title="Año Publicación" Format="yyyy-MM-dd"
                                 Sortable="true" />
 
+                @*Estados*@
+                <TemplateColumn Title="Estado">
+                    @if (!context.Prestado)
+                    {
+                        <span class="badge bg-success">Desocupado</span>
+                    }
+                    else if (context.Prestado)
+                    {
+                        <span class="badge bg-danger">Prestado</span>
+                    }
+                </TemplateColumn>
+
                 @*Opciones*@
                 <TemplateColumn Title="Opciones">
                     <div class="d-flex gap-2">
