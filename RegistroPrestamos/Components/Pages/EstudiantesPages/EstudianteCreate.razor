@@ -1,0 +1,89 @@
+@page "/Estudiante/Create"
+
+@rendermode InteractiveServer
+
+@inject EstudiantesServices EstudianteService
+
+<EditForm Model="Estudiante" OnValidSubmit="Guardar">
+
+    <DataAnnotationsValidator/>
+
+    @*Encabezado de la creación de estudiantes*@
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header d-flex align-items-center" style="height: 50px;">
+                <h5 class="mb-0">Crear Estudiante</h5>
+            </div>
+
+            @*Formulario para la creación de un estudiante*@
+            <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+
+                    @*Nombres*@
+                    <label class="form-label mb-0">
+                        <strong>Nombres</strong>
+                    </label>
+                    <InputText class="form-control" @bind-Value="Estudiante.Nombres"></InputText>
+                    <ValidationMessage For="@(() => Estudiante.Nombres)" />
+
+                    @*Dirección*@
+                    <label class="form-label mb-0">
+                        <strong>Dirección</strong>
+                    </label>
+                    <InputText class="form-control" @bind-Value="Estudiante.Direccion"></InputText>
+                    <ValidationMessage For="@(() => Estudiante.Direccion)" />
+
+                    @*Email*@
+                    <label class="form-label">
+                        <strong>Email</strong>
+                    </label>
+                    <InputText class="form-control" @bind-Value="Estudiante.Email"></InputText>
+                    <ValidationMessage For="@(() => Estudiante.Email)" />
+
+                    @*Fecha de Nacimiento*@
+                    <label class="form-label">
+                        <strong>Fecha Nacimiento</strong>
+                    </label>
+                    <InputDate class="form-control" @bind-Value="Estudiante.FechaNacimiento"></InputDate>
+                    <ValidationMessage For="@(() => Estudiante.FechaNacimiento)" />
+                </div>
+            </div>
+
+            @*Botón Crear*@
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    Crear
+                </button>
+
+            @*Botón Volver*@
+                <a href="/Estudiante/Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{
+    public Estudiantes Estudiante { get; set; } = new();
+
+    private async Task Guardar()
+    {
+        if (await EstudianteService.Existe(Estudiante.Nombres))
+        {
+            return;
+        }
+        if (await EstudianteService.Guardar(Estudiante))
+        {
+            Estudiante = new Estudiantes();
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
+}
