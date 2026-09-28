@@ -60,8 +60,10 @@
 
                 @*Opciones*@
                 <TemplateColumn Title="Opciones">
-                    <a href="/Estudiante/Edit/@context.EstudianteId" class="btn btn-warning">Editar</a>
-                    <a href="Estudiante/Delete/@context.EstudianteId" class="btn btn-danger">Eliminar</a>
+                    <div class="d-flex gap-2">
+                        <a href="/Estudiante/Edit/@context.EstudianteId" class="btn btn-warning">Editar</a>
+                        <a href="Estudiante/Delete/@context.EstudianteId" class="btn btn-danger">Eliminar</a>
+                    </div>
                 </TemplateColumn>
             </QuickGrid>
         </div>
