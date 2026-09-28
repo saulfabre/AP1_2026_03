@@ -1,0 +1,120 @@
+@page "/Libro/Delete/{LibroId:int}"
+
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+@inject LibrosServices LibroService
+
+@if (Libro != null)
+{
+        @*Encabezado de la edición de libros*@
+        <div class="container">
+            <div class="card shadow-lg">
+                <div class="card-header d-flex align-items-center" style="height: 50px;">
+                    <h5 class="mb-0">Eliminar Libro</h5>
+                </div>
+
+                @*Formulario para la edición de un libro*@
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-2">
+
+                        @*LibroId*@
+                        <label class="form-label mb-0">
+                            <strong>Id</strong>
+                        </label>
+                        <InputNumber class="form-control"  @bind-Value="Libro.LibroId" disabled></InputNumber>
+
+                        @*Título*@
+                        <label class="form-label mb-0">
+                            <strong>Título</strong>
+                        </label>
+                        <InputText class="form-control" @bind-Value="Libro.Titulo" disabled></InputText>
+
+                        @*Autor*@
+                        <label class="form-label mb-0">
+                            <strong>Autor</strong>
+                        </label>
+                        <InputText class="form-control" @bind-Value="Libro.Autor" disabled></InputText>
+
+                        @*Año Publicación*@
+                        <label class="form-label">
+                            <strong>Año Publicación</strong>
+                        </label>
+                        <InputDate class="form-control" @bind-Value="Libro.AnoPublicacion" disabled></InputDate>
+                    </div>
+                </div>
+
+                @*Botón Eliminar*@
+                <div class="card-footer d-flex gap-2">
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        Eliminar
+                    </button>
+
+                    @*Botón Volver*@
+                    <a href="/Libro/Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        @*Modal*@
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Desea la eliminación de este libro?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="button" class="btn btn-danger" @onclick="Eliminar">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+else
+{
+    <p>Libro no encontrado</p>
+}
+
+@code
+{
+    [Parameter]
+    public int LibroId { get; set; } = new();
+
+    public Libros? Libro { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Libro = await LibroService.Buscar(LibroId);
+    }
+
+    private async Task Eliminar()
+    {
+        if (Libro == null)
+        {
+            return;
+        }
+
+        if (await LibroService.Eliminar(LibroId))
+        {
+            Navigation.NavigateTo("/Libro/Index");
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
+}
