@@ -1,0 +1,82 @@
+@page "/Libro/Create"
+
+@rendermode InteractiveServer
+
+@inject LibrosServices LibroService
+
+<EditForm Model="Libro" OnValidSubmit="Guardar">
+
+    <DataAnnotationsValidator/>
+
+    @*Encabezado de la creación de libros*@
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header d-flex align-items-center" style="height: 50px;">
+                <h5 class="mb-0">Crear Libro</h5>
+            </div>
+
+            @*Formulario para la creación de un libro*@
+            <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+
+                    @*Título*@
+                    <label class="form-label mb-0">
+                        <strong>Título</strong>
+                    </label>
+                    <InputText class="form-control" @bind-Value="Libro.Titulo"></InputText>
+                    <ValidationMessage For="@(() => Libro.Titulo)" />
+
+                    @*Autor*@
+                    <label class="form-label mb-0">
+                        <strong>Autor</strong>
+                    </label>
+                    <InputText class="form-control" @bind-Value="Libro.Autor"></InputText>
+                    <ValidationMessage For="@(() => Libro.Autor)" />
+
+                    @*Año Publicación*@
+                    <label class="form-label">
+                        <strong>Año Publicación</strong>
+                    </label>
+                    <InputDate class="form-control" @bind-Value="Libro.AnoPublicacion"></InputDate>
+                    <ValidationMessage For="@(() => Libro.AnoPublicacion)" />
+                </div>
+            </div>
+
+            @*Botón Crear*@
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    Crear
+                </button>
+
+            @*Botón Volver*@
+                <a href="/Libro/Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{
+    public Libros Libro { get; set; } = new();
+
+    private async Task Guardar()
+    {
+        if (await LibroService.Existe(Libro.Titulo))
+        {
+            return;
+        }
+        if (await LibroService.Guardar(Libro))
+        {
+            Libro = new Libros();
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
+}
