@@ -40,9 +40,9 @@
                     <label class="form-label"><strong>Búsqueda</strong></label>
 
                     <div class="d-flex gap-2">
-                    <input type="text" class="form-control" placeholder="Buscar..." @bind="ValorFiltro" />
+                        <input type="text" class="form-control" placeholder="Buscar..." @bind="ValorFiltro" />
 
-                    @*Botón Buscar*@
+                        @*Botón Buscar*@
                         <button class="btn btn-outline-primary" @onclick="Buscar">
                             <i class="bi bi-search"></i>
                         </button>
@@ -55,14 +55,34 @@
                 <PropertyColumn Property="@(p => p.PrestamoId)" Title="ID" Sortable="true" />
                 <PropertyColumn Property="@(p => p.Estudiante.Nombres)" Title="Estudiante" Sortable="true" />
                 <PropertyColumn Property="@(p => p.Libro.Titulo)" Title="Libro" Sortable="true" />
-                <PropertyColumn Property="@(p => p.FechaPrestamo)" Title="Fecha Prestamo" Format="yyyy-MM-dd" Sortable="true" />
-                <PropertyColumn Property="@(p => p.FechaDevolucion)" Title="Fecha Devolución" Format="yyyy-MM-dd" Sortable="true" />
-                                
+                <PropertyColumn Property="@(p => p.FechaPrestamo)" Title="Fecha Prestamo" Format="yyyy-MM-dd"
+                                Sortable="true" />
+                <PropertyColumn Property="@(p => p.FechaDevolucion)" Title="Fecha Devolución" Format="yyyy-MM-dd"
+                                Sortable="true" />
 
+                @*Estados*@
+                <TemplateColumn Title="Estado">
+                    @if (context.Devuelto)
+                    {
+                        <span class="badge bg-success">Devuelto</span>
+                    }
+                    else if (DateOnly.FromDateTime(DateTime.Today) > context.FechaDevolucion)
+                    {
+                        <span class="badge bg-danger">Retrasado</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning">Activo</span>
+                    }
+                </TemplateColumn>
+                                
                 @*Opciones*@
                 <TemplateColumn Title="Opciones">
                     <div class="d-flex gap-2">
                         <a href="/Prestamo/Edit/@context.PrestamoId" class="btn btn-warning">Editar</a>
+                        <div class="d-flex gap-2">
+                            <a href="/Prestamo/Delete/@context.PrestamoId" class="btn btn-danger">Eliminar</a>
+                        </div>
                     </div>
                 </TemplateColumn>
             </QuickGrid>
@@ -76,7 +96,8 @@
 </div>
 
 @code
-{
+{   
+
     public List<Prestamos> Prestamos { get; set; } = new();
 
     public string Filtro = "Id";

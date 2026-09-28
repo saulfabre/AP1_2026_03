@@ -1,0 +1,119 @@
+@page "/Prestamo/Delete/{PrestamoId:int}"
+
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+@inject PrestamosServices PrestamoService
+
+
+@if (Prestamo != null)
+{
+    @*Encabezado de la eliminación de prestamos*@
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header d-flex align-items-center" style="height: 50px;">
+                <h5 class="mb-0">Eliminar Prestamo</h5>
+            </div>
+
+            @*Formulario*@
+                    @*Formulario para la creación de un prestamo*@
+                    <div class="card-body">
+                        <div class="d-flex flex-column gap-2">
+
+                            @*PrestamoId*@
+                            <label class="form-label mb-0"><strong>Id</strong></label>
+                            <InputNumber class="form-control" @bind-Value="Prestamo.PrestamoId" disabled></InputNumber>
+
+                            @*Estudiante*@
+                            <label class="form-label mb-0"><strong>Estudiante</strong></label>
+                            <InputText class="form-control" @bind-Value="Prestamo.Estudiante.Nombres" disabled></InputText>
+
+                            @*Libro*@
+                            <label class="form-label mb-0">
+                                <strong>Libro</strong>
+                            </label>
+                            <InputText class="form-control" @bind-Value="Prestamo.Libro.Titulo" disabled></InputText>
+
+                            @*Fecha Prestamo*@
+                            <label class="form-label"><strong>Fecha Prestamo</strong></label>
+                            <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo" disabled></InputDate>
+
+                            @*Fecha Devolucion*@
+                            <label class="form-label"><strong>Fecha Devolucion</strong></label>
+                            <InputDate class="form-control" @bind-Value="Prestamo.FechaDevolucion" disabled></InputDate>
+                        </div>
+                    </div>
+
+                    @*Botón Eliminar*@
+                    <div class="card-footer d-flex gap-2">
+                        <button type="submit" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Eliminar
+                        </button>
+
+                        @*Botón Volver*@
+                        <a href="/Prestamo/Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i>
+                            Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        @*Modal*@
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Desea la eliminación de este prestamo?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="button" class="btn btn-danger" @onclick="Eliminar">
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+else
+{
+    <p>Prestamo no encontrado</p>
+}
+
+@code
+{
+    [Parameter]
+    public int PrestamoId { get; set; } = new();
+
+    public Prestamos? Prestamo { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        Prestamo = await PrestamoService.Buscar(PrestamoId);
+    }
+
+    private async Task Eliminar()
+    {
+        if (Prestamo == null)
+        {
+            return;
+        }
+
+        if (await PrestamoService.Eliminar(PrestamoId))
+        {
+            Navigation.NavigateTo("/Prestamo/Index");
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
+}

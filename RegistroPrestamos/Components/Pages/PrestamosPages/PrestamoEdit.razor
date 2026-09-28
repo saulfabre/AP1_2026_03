@@ -1,0 +1,122 @@
+@page "/Prestamo/Edit/{PrestamoId:int}"
+
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+
+
+@inject PrestamosServices PrestamoService
+
+@inject EstudiantesServices EstudianteService
+
+@inject LibrosServices LibroService
+
+<EditForm Model="Prestamo" OnValidSubmit="Editar">
+
+    <DataAnnotationsValidator/>
+
+    @*Encabezado de la edicion de prestamos*@
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header d-flex align-items-center" style="height: 50px;">
+                <h5 class="mb-0">Editar Prestamo</h5>
+            </div>
+
+            @*Formulario para la edicion de un prestamo*@
+            <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+
+                    @*Estudiante*@
+                    <label class="form-label mb-0">
+                        <strong>Estudiante</strong>
+                    </label>
+                    <InputSelect class="form-control" @bind-Value="Prestamo.EstudianteId">
+                        <option value="0">Seleccione un estudiante</option>
+                        @foreach (Estudiantes estudiante in Estudiantes)
+                        {
+                            <option value="@estudiante.EstudianteId">@estudiante.Nombres</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Prestamo.EstudianteId)" />
+
+                    @*Libro*@
+                    <label class="form-label mb-0">
+                        <strong>Libro</strong>
+                    </label>
+                    <InputSelect class="form-control" @bind-Value="Prestamo.LibroId">
+                        <option value="0">Seleccione un libro</option>
+                        @foreach (Libros libro in Libros)
+                        {
+                            <option value="@libro.LibroId">@libro.Titulo</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Prestamo.LibroId)"/>
+
+                    @*Fecha Prestamo*@
+                    <label class="form-label">
+                        <strong>Fecha Prestamo</strong>
+                    </label>
+                    <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo"></InputDate>
+                    <ValidationMessage For="@(() => Prestamo.FechaPrestamo)"/>
+
+                    @*Fecha Devolucion*@
+                    <label class="form-label">
+                        <strong>Fecha Devolucion</strong>
+                    </label>
+                    <InputDate class="form-control" @bind-Value="Prestamo.FechaDevolucion"></InputDate>
+                    <ValidationMessage For="@(() => Prestamo.FechaDevolucion)"/>
+                </div>
+            </div>
+
+            @*Botón Crear*@
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-warning">
+                    Editar
+                </button>
+
+            @*Botón Volver*@
+                <a href="/Prestamo/Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{      
+    [Parameter]
+    public int PrestamoId { get; set ;} 
+
+    public Prestamos Prestamo { get; set; } = new();
+    public List<Estudiantes> Estudiantes { get; set; } = new();
+    
+    public List<Libros> Libros { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Estudiantes = await EstudianteService.GetList(e => true);
+
+        Libros = await LibroService.GetList(l => true);
+
+        Prestamo = await PrestamoService.Buscar(PrestamoId);
+    }
+
+    private async Task Editar()
+    {
+        if (Prestamo == null)
+        {
+            return;
+        }
+        if (await PrestamoService.Modificar(Prestamo))
+        {
+            Navigation.NavigateTo("/Prestamo/Index");
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
+}
