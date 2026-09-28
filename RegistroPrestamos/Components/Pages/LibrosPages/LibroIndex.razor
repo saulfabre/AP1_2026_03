@@ -29,7 +29,7 @@
                         <option value="Id">Id</option>
                         <option value="Titulo">Título</option>
                         <option value="Autor">Autor</option>
-                        <option value="Año">Año</option>
+                        <option value="Año">Año Publicación</option>
                     </select>
                 </div>
 
@@ -58,8 +58,10 @@
 
                 @*Opciones*@
                 <TemplateColumn Title="Opciones">
-                    <a href="/Libro/Edit/@context.LibroId" class="btn btn-warning">Editar</a>
-                    <a href="Libro/Delete/@context.LibroId" class="btn btn-danger">Eliminar</a>
+                    <div class="d-flex gap-2">
+                        <a href="/Libro/Edit/@context.LibroId" class="btn btn-warning">Editar</a>
+                        <a href="Libro/Delete/@context.LibroId" class="btn btn-danger">Eliminar</a>
+                    </div>
                 </TemplateColumn>
             </QuickGrid>
         </div>
