@@ -1,0 +1,98 @@
+@page "/Libro/Edit/{LibroId:int}"
+
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+@inject LibrosServices LibroService
+
+@if (Libro != null)
+{
+    <EditForm Model="Libro" OnValidSubmit="Editar">
+
+        <DataAnnotationsValidator />
+
+        @*Encabezado de la edición de libros*@
+        <div class="container">
+            <div class="card shadow-lg">
+                <div class="card-header d-flex align-items-center" style="height: 50px;">
+                    <h5 class="mb-0">Editar Libro</h5>
+                </div>
+
+                @*Formulario para la edición de un libro*@
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-2">
+
+                        @*Título*@
+                        <label class="form-label mb-0">
+                            <strong>Título</strong>
+                        </label>
+                        <InputText class="form-control" @bind-Value="Libro.Titulo"></InputText>
+                        <ValidationMessage For="@(() => Libro.Titulo)" />
+
+                        @*Autor*@
+                        <label class="form-label mb-0">
+                            <strong>Autor</strong>
+                        </label>
+                        <InputText class="form-control" @bind-Value="Libro.Autor"></InputText>
+                        <ValidationMessage For="@(() => Libro.Autor)" />
+
+                        @*Año Publicación*@
+                        <label class="form-label">
+                            <strong>Año Publicación</strong>
+                        </label>
+                        <InputDate class="form-control" @bind-Value="Libro.AnoPublicacion"></InputDate>
+                        <ValidationMessage For="@(() => Libro.AnoPublicacion)" />
+                    </div>
+                </div>
+
+                @*Botón Editar*@
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-warning">
+                        Editar
+                    </button>
+
+                    @*Botón Volver*@
+                    <a href="/Libro/Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+else
+{
+    <p>Libro no encontrado</p>
+}
+
+@code
+{
+    [Parameter]
+    public int LibroId { get; set; } = new();
+
+    public Libros? Libro { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Libro = await LibroService.Buscar(LibroId);
+    }
+
+    private async Task Editar()
+    {
+        if (Libro == null)
+        {
+            return;
+        }
+
+        if (await LibroService.Modificar(Libro))
+        {
+            Navigation.NavigateTo("/Libro/Index");
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
+}

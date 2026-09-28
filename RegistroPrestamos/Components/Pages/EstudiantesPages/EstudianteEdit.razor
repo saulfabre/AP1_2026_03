@@ -1,0 +1,105 @@
+@page "/Estudiante/Edit/{EstudianteId:int}"
+
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+@inject EstudiantesServices EstudianteService
+
+@if (Estudiante != null)
+{
+    <EditForm Model="Estudiante" OnValidSubmit="Editar">
+
+        <DataAnnotationsValidator />
+
+        @*Encabezado de la edición de estudiantes*@
+        <div class="container">
+            <div class="card shadow-lg">
+                <div class="card-header d-flex align-items-center" style="height: 50px;">
+                    <h5 class="mb-0">Editar Estudiante</h5>
+                </div>
+
+                @*Formulario para la edición de un estudiante*@
+                <div class="card-body">
+                    <div class="d-flex flex-column gap-2">
+
+                        @*Nombres*@
+                        <label class="form-label mb-0">
+                            <strong>Nombres</strong>
+                        </label>
+                        <InputText class="form-control" @bind-Value="Estudiante.Nombres"></InputText>
+                        <ValidationMessage For="@(() => Estudiante.Nombres)" />
+
+                        @*Dirección*@
+                        <label class="form-label mb-0">
+                            <strong>Dirección</strong>
+                        </label>
+                        <InputText class="form-control" @bind-Value="Estudiante.Direccion"></InputText>
+                        <ValidationMessage For="@(() => Estudiante.Direccion)" />
+
+                        @*Email*@
+                        <label class="form-label">
+                            <strong>Email</strong>
+                        </label>
+                        <InputText class="form-control" @bind-Value="Estudiante.Email"></InputText>
+                        <ValidationMessage For="@(() => Estudiante.Email)" />
+
+                        @*Fecha de Nacimiento*@
+                        <label class="form-label">
+                            <strong>Fecha de Nacimiento</strong>
+                        </label>
+                        <InputDate class="form-control" @bind-Value="Estudiante.FechaNacimiento"></InputDate>
+                        <ValidationMessage For="@(() => Estudiante.FechaNacimiento)" />
+                    </div>
+                </div>
+
+                @*Botón Editar*@
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-warning">
+                        Editar
+                    </button>
+
+                    @*Botón Volver*@
+                    <a href="/Estudiante/Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+}
+else
+{
+    <p>Estudiante no encontrado</p>
+}
+
+@code
+{
+    [Parameter]
+    public int EstudianteId { get; set; } = new();
+
+    public Estudiantes? Estudiante { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Estudiante = await EstudianteService.Buscar(EstudianteId);
+    }
+
+    private async Task Editar()
+    {
+        if (Estudiante == null)
+        {
+            return;
+        }
+
+        if (await EstudianteService.Modificar(Estudiante))
+        {
+            Navigation.NavigateTo("/Estudiante/Index");
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
+}
