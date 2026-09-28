@@ -1,8 +1,15 @@
+using Microsoft.EntityFrameworkCore;
 using RegistroPrestamos.Components;
+using RegistroPrestamos.Context;
+using RegistroPrestamos.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddBlazorBootstrap();
+
+builder.Services.AddScoped<LibrosServices>();
+
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlConStr")));
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
