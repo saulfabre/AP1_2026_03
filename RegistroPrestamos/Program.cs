@@ -9,6 +9,10 @@ builder.Services.AddBlazorBootstrap();
 
 builder.Services.AddScoped<LibrosServices>();
 
+builder.Services.AddScoped<EstudiantesServices>();
+
+builder.Services.AddScoped<PrestamosServices>();
+
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlConStr")));
 
 // Add services to the container.
