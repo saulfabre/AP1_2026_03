@@ -13,7 +13,7 @@ public class PrestamosServices(IDbContextFactory<Contexto> contextFactory
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
 
-        return await contexto.Prestamos.FirstOrDefaultAsync(p => p.PrestamoId == prestamoId);
+        return await contexto.Prestamos.Include(p=> p.Estudiante).Include(p => p.Libro).FirstOrDefaultAsync(p => p.PrestamoId == prestamoId);
     }
 
     public async Task<List<Prestamos>> GetList(Expression<Func<Prestamos, bool>> criterio)
@@ -43,8 +43,17 @@ public class PrestamosServices(IDbContextFactory<Contexto> contextFactory
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
 
-        contexto.Update(prestamo);
+        var Existe = await contexto.Prestamos.FirstOrDefaultAsync(p => p.PrestamoId == prestamo.PrestamoId);
 
+        if (Existe != null)
+        {
+            Existe.EstudianteId = prestamo.EstudianteId;
+            Existe.LibroId = prestamo.LibroId;
+            Existe.FechaPrestamo = prestamo.FechaPrestamo;
+            Existe.FechaDevolucion = prestamo.FechaDevolucion;
+            Existe.Devuelto = prestamo.Devuelto;
+        }
+        
         return await contexto.SaveChangesAsync() > 0;
     }
 
