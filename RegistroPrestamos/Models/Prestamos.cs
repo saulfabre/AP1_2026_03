@@ -8,14 +8,18 @@ public class Prestamos
     [Key]
     public int PrestamoId { get; set; }
 
+    public int LibroId { get; set ; }
+
+    public int EstudianteId { get; set; }
+
     [Required(ErrorMessage = "La fecha de prestamo es obligatoria.")]
     public DateOnly FechaPrestamo { get; set; }
 
     public DateOnly FechaDevolucion { get; set; }
 
     [ForeignKey("LibroId")]
-    public Libros LibroId { get; set; }  = null!;
+    public Libros Libro { get; set; }  = null!;
 
     [ForeignKey("EstudianteId")]
-    public Estudiantes EstudianteId { get; set; } = null!;
+    public Estudiantes Estudiante { get; set; } = null!;
 }
