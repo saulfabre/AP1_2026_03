@@ -72,11 +72,15 @@
 
     private async Task Guardar()
     {
-        if (await EstudianteService.Existe(Estudiante.Nombres))
+        var existe = await EstudianteService.Existe(Estudiante.Nombres);
+
+        if (existe)
         {
             return;
         }
-        if (await EstudianteService.Guardar(Estudiante))
+
+        var guardado = await EstudianteService.Guardar(Estudiante);
+        if (guardado)
         {
             Estudiante = new Estudiantes();
             return;
