@@ -3,7 +3,7 @@
 @rendermode InteractiveServer
 
 @inject NavigationManager Navigation
-@inject LibrosServices LibroService
+@inject LibrosServices libroService
 
 @if (Libro != null)
 {
@@ -97,7 +97,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Libro = await LibroService.Buscar(LibroId);
+        Libro = await libroService.Buscar(LibroId);
     }
 
     private async Task Eliminar()
@@ -107,7 +107,7 @@ else
             return;
         }
 
-        if (await LibroService.Eliminar(LibroId))
+        if (await libroService.Eliminar(LibroId))
         {
             Navigation.NavigateTo("/Libro/Index");
             return;
