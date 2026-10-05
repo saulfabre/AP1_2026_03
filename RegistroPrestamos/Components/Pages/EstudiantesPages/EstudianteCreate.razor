@@ -1,8 +1,10 @@
 @page "/Estudiante/Create"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject EstudiantesServices estudianteService
+@inject ToastService ToastService
 
 <PageTitle>Crear Estudiante</PageTitle>
 
@@ -78,17 +80,20 @@
 
         if (existe)
         {
+            ToastService.ShowWarning("El estudiante ya existe en la base de datos.", "Estudiante duplicado");
             return;
         }
 
         var guardado = await estudianteService.Guardar(Estudiante);
         if (guardado)
-        {
+        {   
+            ToastService.ShowSuccess("El estudiante ha sido creado exitosamente.", "Crear Estudiante");
             Estudiante = new Estudiantes();
             return;
         }
         else
-        {
+        {   
+            ToastService.ShowError("Error al crear estudiante.", "Crear Estudiante");
             return;
         }
     }

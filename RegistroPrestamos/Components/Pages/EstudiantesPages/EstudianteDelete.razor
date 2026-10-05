@@ -1,9 +1,11 @@
 @page "/Estudiante/Delete/{EstudianteId:int}"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject NavigationManager Navigation
 @inject EstudiantesServices EstudianteService
+@inject ToastService ToastService
 
 <PageTitle>Eliminar Estudiante</PageTitle>
 
@@ -112,16 +114,19 @@ else
     {
         if (Estudiante == null)
         {
+            ToastService.ShowWarning("Estudiante no encontrado", "Eliminar Estudiante");
             return;
         }
 
         if (await EstudianteService.Eliminar(EstudianteId))
-        {
+        {   
+            ToastService.ShowSuccess("Estudiante eliminado correctamente.", "Eliminar Estudiante");
             Navigation.NavigateTo("/Estudiante/Index");
             return;
         }
         else
-        {
+        {   
+            ToastService.ShowError("Error al eliminar estudiante.", "Eliminar Estudiante");
             return;
         }
     }

@@ -1,9 +1,11 @@
 @page "/Estudiante/Edit/{EstudianteId:int}"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject NavigationManager Navigation
 @inject EstudiantesServices EstudianteService
+@inject ToastService ToastService
 
 <PageTitle>Editar Estudiante</PageTitle>
 
@@ -91,16 +93,19 @@ else
     {
         if (Estudiante == null)
         {
+            ToastService.ShowWarning("Estudiante no encontrado", "Editar Estudiante");
             return;
         }
 
         if (await EstudianteService.Modificar(Estudiante))
         {
+            ToastService.ShowSuccess("Estudiante editado correctamente.", "Editar Estudiante");
             Navigation.NavigateTo("/Estudiante/Index");
             return;
         }
         else
         {
+            ToastService.ShowError("Error al editar estudiante.", "Editar Estudiante");
             return;
         }
     }

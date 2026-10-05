@@ -1,8 +1,10 @@
 @page "/Prestamo/Create"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject PrestamosServices PrestamoService
+@inject ToastService ToastService
 
 @inject EstudiantesServices EstudianteService
 
@@ -105,23 +107,33 @@
     {
         if (await PrestamoService.Existe(Prestamo.PrestamoId))
         {
+            ToastService.ShowWarning("El préstamo ya existe en la base de datos.", "Préstamo duplicado");
             return;
         }
         var libro = Libros.FirstOrDefault(l => l.LibroId == Prestamo.LibroId);
 
-        if (libro != null)
+        if (libro == null)
         {
-            if (libro.Prestado == true)
-            {
-                return;
-            }
-            if (await PrestamoService.Guardar(Prestamo))
-            {
-                libro.Prestado = true;
-                await LibroService.Modificar(libro);
-                Prestamo = new Prestamos();
-                return;
-            }
+            ToastService.ShowWarning("Libro no encontrado", "Crear Préstamo");
+            return;
+        }
+        if (libro.Prestado)
+        {
+            ToastService.ShowWarning("El libro ya está prestado.", "Crear Préstamo");
+            return;
+        }
+        if (await PrestamoService.Guardar(Prestamo))
+        {
+            libro.Prestado = true;
+            await LibroService.Modificar(libro);
+            ToastService.ShowSuccess("El préstamo ha sido creado exitosamente.", "Crear Préstamo");
+            Prestamo = new Prestamos();
+            return;
+        }
+        else
+        {
+            ToastService.ShowError("Error al crear préstamo.", "Crear Préstamo");
+            return;
         }
     }
 }

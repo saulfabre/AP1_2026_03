@@ -1,8 +1,10 @@
 @page "/Libro/Create"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject LibrosServices LibroService
+@inject ToastService ToastService
 
 <PageTitle>Crear Libro</PageTitle>
 
@@ -69,15 +71,18 @@
     {
         if (await LibroService.Existe(Libro.Titulo))
         {
+            ToastService.ShowWarning("El libro ya existe en la base de datos.", "Libro duplicado");
             return;
         }
         if (await LibroService.Guardar(Libro))
         {
+            ToastService.ShowSuccess("El libro ha sido creado exitosamente.", "Crear Libro");
             Libro = new Libros();
             return;
         }
         else
         {
+            ToastService.ShowError("Error al crear libro.", "Crear Libro");
             return;
         }
     }

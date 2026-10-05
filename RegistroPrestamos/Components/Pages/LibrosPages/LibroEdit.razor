@@ -1,9 +1,11 @@
 @page "/Libro/Edit/{LibroId:int}"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject NavigationManager Navigation
 @inject LibrosServices LibroService
+@inject ToastService ToastService
 
 <PageTitle>Editar Libro</PageTitle>
 
@@ -84,16 +86,19 @@ else
     {
         if (Libro == null)
         {
+            ToastService.ShowWarning("Libro no encontrado", "Editar Libro");
             return;
         }
 
         if (await LibroService.Modificar(Libro))
         {
+            ToastService.ShowSuccess("Libro editado correctamente.", "Editar Libro");
             Navigation.NavigateTo("/Libro/Index");
             return;
         }
         else
         {
+            ToastService.ShowError("Error al editar libro.", "Editar Libro");
             return;
         }
     }
