@@ -1,9 +1,11 @@
 @page "/Libro/Delete/{LibroId:int}"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject NavigationManager Navigation
 @inject LibrosServices libroService
+@inject ToastService ToastService
 
 <PageTitle>Eliminar Libro</PageTitle>
 
@@ -106,16 +108,19 @@ else
     {
         if (Libro == null)
         {
+            ToastService.ShowWarning("Libro no encontrado", "Eliminar Libro");
             return;
         }
 
         if (await libroService.Eliminar(LibroId))
         {
+            ToastService.ShowSuccess("Libro eliminado correctamente.", "Eliminar Libro");
             Navigation.NavigateTo("/Libro/Index");
             return;
         }
         else
         {
+            ToastService.ShowError("Error al eliminar libro.", "Eliminar Libro");
             return;
         }
     }

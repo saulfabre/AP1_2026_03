@@ -1,4 +1,5 @@
 @page "/Prestamo/Edit/{PrestamoId:int}"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
@@ -6,6 +7,7 @@
 
 
 @inject PrestamosServices PrestamoService
+@inject ToastService ToastService
 
 @inject EstudiantesServices EstudianteService
 
@@ -109,15 +111,18 @@
     {
         if (Prestamo == null)
         {
+            ToastService.ShowWarning("Préstamo no encontrado", "Editar Préstamo");
             return;
         }
         if (await PrestamoService.Modificar(Prestamo))
         {
+            ToastService.ShowSuccess("Préstamo editado correctamente.", "Editar Préstamo");
             Navigation.NavigateTo("/Prestamo/Index");
             return;
         }
         else
         {
+            ToastService.ShowError("Error al editar préstamo.", "Editar Préstamo");
             return;
         }
     }

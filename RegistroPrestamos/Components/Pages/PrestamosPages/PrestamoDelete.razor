@@ -1,9 +1,11 @@
 @page "/Prestamo/Delete/{PrestamoId:int}"
+@using RegistroPrestamos.Extensors
 
 @rendermode InteractiveServer
 
 @inject NavigationManager Navigation
 @inject PrestamosServices PrestamoService
+@inject ToastService ToastService
 
 <PageTitle>Eliminar Estudiante</PageTitle>
 
@@ -104,16 +106,19 @@ else
     {
         if (Prestamo == null)
         {
+            ToastService.ShowWarning("Préstamo no encontrado", "Eliminar Préstamo");
             return;
         }
 
         if (await PrestamoService.Eliminar(PrestamoId))
         {
+            ToastService.ShowSuccess("Préstamo eliminado correctamente.", "Eliminar Préstamo");
             Navigation.NavigateTo("/Prestamo/Index");
             return;
         }
         else
         {
+            ToastService.ShowError("Error al eliminar préstamo.", "Eliminar Préstamo");
             return;
         }
     }
