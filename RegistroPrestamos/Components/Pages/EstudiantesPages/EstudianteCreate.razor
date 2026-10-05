@@ -2,7 +2,7 @@
 
 @rendermode InteractiveServer
 
-@inject EstudiantesServices EstudianteService
+@inject EstudiantesServices estudianteService
 
 <EditForm Model="Estudiante" OnValidSubmit="Guardar">
 
@@ -72,14 +72,14 @@
 
     private async Task Guardar()
     {
-        var existe = await EstudianteService.Existe(Estudiante.Nombres);
+        var existe = await estudianteService.Existe(Estudiante.Nombres);
 
         if (existe)
         {
             return;
         }
 
-        var guardado = await EstudianteService.Guardar(Estudiante);
+        var guardado = await estudianteService.Guardar(Estudiante);
         if (guardado)
         {
             Estudiante = new Estudiantes();
