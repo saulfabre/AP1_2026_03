@@ -5,6 +5,8 @@
 @inject NavigationManager Navigation
 @inject EstudiantesServices EstudianteService
 
+<PageTitle>Editar Estudiante</PageTitle>
+
 @if (Estudiante != null)
 {
     <EditForm Model="Estudiante" OnValidSubmit="Editar">
