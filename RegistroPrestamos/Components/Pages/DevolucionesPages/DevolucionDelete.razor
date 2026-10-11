@@ -102,7 +102,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        Devolucion = await DevolucionService.Buscar(DevolucionId);
+        Devolucion = (await DevolucionService.Buscar(DevolucionId)).Value;
         if (Devolucion != null)
         {
             Prestamo = await PrestamoService.Buscar(Devolucion.PrestamoId);
@@ -117,22 +117,29 @@ else
             return;
         }
 
-        if (await DevolucionService.Eliminar(DevolucionId))
+        var resultado = await DevolucionService.Eliminar(DevolucionId);
+        var eliminada = false;
+        resultado.OnSuccess(() => eliminada = true);
+        resultado.OnFailure(() => ToastService.ShowError("Error al eliminar devolucion.", "Eliminar Devolucion"));
+
+        if (eliminada)
         {
             Prestamo.Devuelto = false;
-            await PrestamoService.Modificar(Prestamo);
+            if (!await PrestamoService.Modificar(Prestamo))
+            {
+                ToastService.ShowError("La devolución se eliminó, pero no se pudo actualizar el prestamo.", "Eliminar Devolucion");
+                return;
+            }
 
             Prestamo.Libro.Prestado = true;
-            await LibroService.Modificar(Prestamo.Libro);
+            if (!await LibroService.Modificar(Prestamo.Libro))
+            {
+                ToastService.ShowError("La devolución se eliminó, pero no se pudo actualizar el libro.", "Eliminar Devolucion");
+                return;
+            }
 
             ToastService.ShowSuccess("Devolucion eliminada correctamente.", "Eliminar Devolucion");
             Navigation.NavigateTo("/Devolucion/Index");
-            return;
-        }
-        else
-        {
-            ToastService.ShowError("Error al eliminar devolucion.", "Eliminar Devolucion");
-            return;
         }
     }
 }
