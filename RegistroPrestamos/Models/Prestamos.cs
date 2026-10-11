@@ -1,0 +1,27 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace RegistroPrestamos.Models;
+
+public class Prestamos
+{
+    [Key]
+    public int PrestamoId { get; set; }
+
+    [Required(ErrorMessage = "La fecha de prestamo es obligatoria.")]
+    public DateOnly FechaPrestamo { get; set; }
+
+    public DateOnly FechaDevolucion { get; set; }
+
+    public bool Devuelto { get; set; }
+
+    [ForeignKey("LibroId")]
+    public int LibroId { get; set ; }
+
+    public Libros Libro { get; set; }  = null!;
+
+    [ForeignKey("EstudianteId")]
+    public int EstudianteId { get; set; }
+
+    public Estudiantes Estudiante { get; set; } = null!;
+}

@@ -1,0 +1,126 @@
+@page "/Libro/Index"
+
+@rendermode InteractiveServer
+
+@inject LibrosServices LibroService
+
+<PageTitle>Index</PageTitle>
+
+@*Encabezado de la consulta de libros*@
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center" style="height: 50px;">
+            <h5 class="mb-0">Consulta de Libros</h5>
+
+            @*Bóton para crear un nuevo libro*@
+            <a href="/Libro/Create" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+                Crear
+            </a>
+        </div>
+
+        @*Cuerpo de la consulta de libros*@
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-4">
+                @*Filtrar por*@
+                <div>
+                    <label class="form-label"><strong>Filtrar por</strong></label>
+                    <select class="form-select" @bind="Filtro">
+                        <option value="Id">Id</option>
+                        <option value="Titulo">Título</option>
+                        <option value="Autor">Autor</option>
+                        <option value="Año">Año Publicación</option>
+                    </select>
+                </div>
+
+                @*Búsqueda*@
+                <div>
+                    <label class="form-label"><strong>Búsqueda</strong></label>
+
+                    <div class="d-flex gap-2">
+                    <input type="text" class="form-control" placeholder="Buscar..." @bind="ValorFiltro" />
+
+                    @*Botón Buscar*@
+                        <button class="btn btn-outline-primary" @onclick="Buscar">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @*Tabla para consultar información de libros*@
+            <QuickGrid Items="@Libros.AsQueryable()" Class="table table-bordered mt-3 align-middle">
+                <PropertyColumn Property="@(l => l.LibroId)" Title="ID" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Titulo)" Title="Título" Sortable="true" />
+                <PropertyColumn Property="@(l => l.Autor)" Title="Autor" Sortable="true" />
+                <PropertyColumn Property="@(l => l.AnoPublicacion)" Title="Año Publicación" Format="yyyy-MM-dd"
+                                Sortable="true" />
+
+                @*Estados*@
+                <TemplateColumn Title="Estado">
+                    @if (!context.Prestado)
+                    {
+                        <span class="badge bg-success">Desocupado</span>
+                    }
+                    else if (context.Prestado)
+                    {
+                        <span class="badge bg-danger">Prestado</span>
+                    }
+                </TemplateColumn>
+
+                @*Opciones*@
+                <TemplateColumn Title="Opciones">
+                    <div class="d-flex gap-2">
+                        <a href="/Libro/Edit/@context.LibroId" class="btn btn-warning">Editar</a>
+                        <a href="Libro/Delete/@context.LibroId" class="btn btn-danger">Eliminar</a>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+
+        @*Footer*@
+        <div class="card-footer">
+            <p class="mb-0"><strong>Cantidad: </strong>@Libros.Count</p>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    public List<Libros> Libros { get; set; } = new();
+       
+    public string Filtro = "Id";
+    public string ValorFiltro = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Libros = await LibroService.GetList(l => true);
+    }
+
+    private async Task Buscar()
+    {
+        if (ValorFiltro.Trim() != "")
+        {
+            if (Filtro == "Id" && int.TryParse(ValorFiltro, out int libroId))
+            {
+                Libros = await LibroService.GetList(l => l.LibroId == libroId);
+            }
+            else if (Filtro == "Titulo")
+            {
+                Libros = await LibroService.GetList(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+            else if (Filtro == "Autor")
+            {
+                Libros = await LibroService.GetList(l => l.Autor.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+            else if (Filtro == "Año" && DateOnly.TryParse(ValorFiltro, out DateOnly anoPublicacion))
+            {
+                Libros = await LibroService.GetList(l => l.AnoPublicacion == anoPublicacion);
+            }
+        }
+        else
+        {
+            Libros = await LibroService.GetList(l => true);
+        }
+    }
+}
