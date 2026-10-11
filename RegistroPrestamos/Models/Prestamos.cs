@@ -24,4 +24,6 @@ public class Prestamos
     public int EstudianteId { get; set; }
 
     public Estudiantes Estudiante { get; set; } = null!;
+
+    public Devoluciones Devolucion { get; set; } = null!;
 }
