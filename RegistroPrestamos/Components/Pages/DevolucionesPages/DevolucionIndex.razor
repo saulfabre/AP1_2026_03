@@ -72,8 +72,9 @@
         </div>
 
         @*Footer*@
-        <div class="card-footer">
+        <div class="card-footer d-flex justify-content-between">
             <p class="mb-0"><strong>Cantidad: </strong>@Devoluciones.Count</p>
+            <p class="mb-0"><strong>Promedio: </strong>@(Devoluciones.Count == 0 ? 0 : @Devoluciones.Average(d => d.FechaDevolucion.DayNumber - d.Prestamo.FechaPrestamo.DayNumber))</p>
         </div>
     </div>
 </div>
