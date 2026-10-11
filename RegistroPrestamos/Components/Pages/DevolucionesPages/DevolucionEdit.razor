@@ -1,0 +1,101 @@
+@page "/Devolucion/Edit/{DevolucionId:int}"
+@using RegistroPrestamos.Extensors
+
+@rendermode InteractiveServer
+
+@inject NavigationManager Navigation
+
+
+@inject DevolucionesServices DevolucionService
+@inject ToastService ToastService
+
+@inject PrestamosServices PrestamoService
+
+<PageTitle>Editar Devolucion</PageTitle>
+
+<EditForm Model="Devolucion" OnValidSubmit="Editar">
+
+    <DataAnnotationsValidator/>
+
+    @*Encabezado de la edicion de devoluciones*@
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header d-flex align-items-center" style="height: 50px;">
+                <h5 class="mb-0">Editar Devolucion</h5>
+            </div>
+
+            @*Formulario para la edicion de una devolucion*@
+            <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+
+                    @*Prestamo*@
+                    <label class="form-label mb-0">
+                        <strong>Prestamo</strong>
+                    </label>
+                    <InputNumber class="form-control" @bind-Value="Devolucion.PrestamoId" disabled></InputNumber>
+
+                    @*Fecha Devolucion*@
+                    <label class="form-label">
+                        <strong>Fecha Devolucion</strong>
+                    </label>
+                    <InputDate class="form-control" @bind-Value="Devolucion.FechaDevolucion"></InputDate>
+                    <ValidationMessage For="@(() => Devolucion.FechaDevolucion)"/>
+                </div>
+            </div>
+
+            @*Botón Editar*@
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-warning">
+                    Editar
+                </button>
+
+            @*Botón Volver*@
+                <a href="/Devolucion/Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{
+    [Parameter]
+    public int DevolucionId { get; set ;}
+
+    public Devoluciones Devolucion { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var devolucion = await DevolucionService.Buscar(DevolucionId);
+        if (devolucion == null)
+        {
+            ToastService.ShowWarning("Devolucion no encontrada", "Editar Devolucion");
+            Navigation.NavigateTo("/Devolucion/Index");
+            return;
+        }
+
+        Devolucion = devolucion;
+    }
+
+    private async Task Editar()
+    {
+        if (Devolucion == null)
+        {
+            ToastService.ShowWarning("Devolucion no encontrada", "Editar Devolucion");
+            return;
+        }
+        if (await DevolucionService.Modificar(Devolucion))
+        {
+            ToastService.ShowSuccess("Devolucion editada correctamente.", "Editar Devolucion");
+            Navigation.NavigateTo("/Devolucion/Index");
+            return;
+        }
+        else
+        {
+            ToastService.ShowError("Error al editar devolucion.", "Editar Devolucion");
+            return;
+        }
+    }
+}
