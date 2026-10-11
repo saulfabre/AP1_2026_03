@@ -1,0 +1,118 @@
+@page "/Devolucion/Create"
+@using RegistroPrestamos.Extensors
+
+@rendermode InteractiveServer
+
+@inject DevolucionesServices DevolucionService
+@inject ToastService ToastService
+
+@inject PrestamosServices PrestamoService
+
+@inject LibrosServices LibroService
+
+<PageTitle>Crear Devolucion</PageTitle>
+
+<EditForm Model="Devolucion" OnValidSubmit="Guardar">
+
+    <DataAnnotationsValidator/>
+
+    @*Encabezado de la creación de devoluciones*@
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header d-flex align-items-center" style="height: 50px;">
+                <h5 class="mb-0">Crear Devolucion</h5>
+            </div>
+
+            @*Formulario para la creación de una devolucion*@
+            <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+
+                    @*Prestamo*@
+                    <label class="form-label mb-0">
+                        <strong>Prestamo</strong>
+                    </label>
+                    <InputSelect class="form-control" @bind-Value="Devolucion.PrestamoId">
+                        <option value="0">Seleccione un prestamo</option>
+                        @foreach (Prestamos prestamo in Prestamos)
+                        {
+                            <option value="@prestamo.PrestamoId">ID: @prestamo.PrestamoId - @prestamo.Estudiante.Nombres - @prestamo.Libro.Titulo</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => Devolucion.PrestamoId)" />
+
+                    @*Fecha Devolucion*@
+                    <label class="form-label">
+                        <strong>Fecha Devolucion</strong>
+                    </label>
+                    <InputDate class="form-control" @bind-Value="Devolucion.FechaDevolucion"></InputDate>
+                    <ValidationMessage For="@(() => Devolucion.FechaDevolucion)"/>
+                </div>
+            </div>
+
+            @*Botón Crear*@
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus"></i>
+                    Crear
+                </button>
+
+            @*Botón Volver*@
+                <a href="/Devolucion/Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{
+
+    public Devoluciones Devolucion { get; set; } = new();
+
+    public List<Prestamos> Prestamos { get; set; } = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Prestamos = await PrestamoService.GetList(p => !p.Devuelto);
+
+        var devoluciones = await DevolucionService.GetList(d => true);
+        Prestamos = Prestamos.Where(p => devoluciones.All(d => d.PrestamoId != p.PrestamoId)).ToList();
+    }
+
+    private async Task Guardar()
+    {
+        if (await DevolucionService.GetList(d => d.PrestamoId == Devolucion.PrestamoId) is { Count: > 0 })
+        {
+            ToastService.ShowWarning("El prestamo ya tiene una devolucion registrada.", "Devolucion duplicada");
+            return;
+        }
+        var prestamo = Prestamos.FirstOrDefault(p => p.PrestamoId == Devolucion.PrestamoId);
+
+        if (prestamo == null)
+        {
+            ToastService.ShowWarning("Prestamo no encontrado", "Crear Devolucion");
+            return;
+        }
+        if (await DevolucionService.Guardar(Devolucion))
+        {
+            prestamo.Devuelto = true;
+            await PrestamoService.Modificar(prestamo);
+
+            prestamo.Libro.Prestado = false;
+            await LibroService.Modificar(prestamo.Libro);
+
+            ToastService.ShowSuccess("La devolucion ha sido creada exitosamente.", "Crear Devolucion");
+            Devolucion = new Devoluciones();
+            Prestamos = await PrestamoService.GetList(p => !p.Devuelto);
+            return;
+        }
+        else
+        {
+            ToastService.ShowError("Error al crear devolucion.", "Crear Devolucion");
+            return;
+        }
+    }
+}

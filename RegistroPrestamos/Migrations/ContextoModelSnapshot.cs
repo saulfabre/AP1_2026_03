@@ -22,6 +22,28 @@ namespace RegistroPrestamos.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("RegistroPrestamos.Models.Devoluciones", b =>
+                {
+                    b.Property<int>("DevolucionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DevolucionId"));
+
+                    b.Property<DateOnly>("FechaDevolucion")
+                        .HasColumnType("date");
+
+                    b.Property<int>("PrestamoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DevolucionId");
+
+                    b.HasIndex("PrestamoId")
+                        .IsUnique();
+
+                    b.ToTable("Devoluciones");
+                });
+
             modelBuilder.Entity("RegistroPrestamos.Models.Estudiantes", b =>
                 {
                     b.Property<int>("EstudianteId")
@@ -109,6 +131,17 @@ namespace RegistroPrestamos.Migrations
                     b.ToTable("Prestamos");
                 });
 
+            modelBuilder.Entity("RegistroPrestamos.Models.Devoluciones", b =>
+                {
+                    b.HasOne("RegistroPrestamos.Models.Prestamos", "Prestamo")
+                        .WithOne("Devolucion")
+                        .HasForeignKey("RegistroPrestamos.Models.Devoluciones", "PrestamoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prestamo");
+                });
+
             modelBuilder.Entity("RegistroPrestamos.Models.Prestamos", b =>
                 {
                     b.HasOne("RegistroPrestamos.Models.Estudiantes", "Estudiante")
@@ -127,6 +160,7 @@ namespace RegistroPrestamos.Migrations
 
                     b.Navigation("Libro");
                 });
+
 #pragma warning restore 612, 618
         }
     }

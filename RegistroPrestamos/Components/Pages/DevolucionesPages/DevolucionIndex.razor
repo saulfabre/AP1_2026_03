@@ -1,0 +1,125 @@
+@page "/Devolucion/Index"
+
+@rendermode InteractiveServer
+
+@inject DevolucionesServices DevolucionService
+
+<PageTitle>Index</PageTitle>
+
+@*Encabezado de la consulta de devoluciones*@
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center" style="height: 50px;">
+            <h5 class="mb-0">Consulta de Devoluciones</h5>
+
+            @*Bóton para crear una nueva devolucion*@
+            <a href="/Devolucion/Create" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+                Crear
+            </a>
+        </div>
+
+        @*Cuerpo de la consulta de devoluciones*@
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-4">
+                @*Filtrar por*@
+                <div>
+                    <label class="form-label"><strong>Filtrar por</strong></label>
+                    <select class="form-select" @bind="Filtro">
+                        <option value="Id">Id</option>
+                        <option value="Estudiante">Estudiante</option>
+                        <option value="Libro">Libro</option>
+                        <option value="FechaPrestamo">Fecha Prestamo</option>
+                        <option value="FechaDevolucion">Fecha Devolucion</option>
+                    </select>
+                </div>
+
+                @*Búsqueda*@
+                <div>
+                    <label class="form-label"><strong>Búsqueda</strong></label>
+
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control" placeholder="Buscar..." @bind="ValorFiltro" />
+
+                        @*Botón Buscar*@
+                        <button class="btn btn-outline-primary" @onclick="Buscar">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @*Tabla para consultar información de devoluciones*@
+            <QuickGrid Items="@Devoluciones.AsQueryable()" Class="table table-bordered mt-3 align-middle">
+                <PropertyColumn Property="@(d => d.DevolucionId)" Title="ID" Sortable="true" />
+                <PropertyColumn Property="@(d => d.Prestamo.Estudiante.Nombres)" Title="Estudiante" Sortable="true" />
+                <PropertyColumn Property="@(d => d.Prestamo.Libro.Titulo)" Title="Libro" Sortable="true" />
+                <PropertyColumn Property="@(d => d.Prestamo.FechaPrestamo)" Title="Fecha Prestamo" Format="yyyy-MM-dd" Sortable="true" />                      
+                <PropertyColumn Property="@(d => d.Prestamo.FechaDevolucion)" Title="Fecha Limite Devolucion" Format="yyyy-MM-dd" Sortable="true" />
+                <PropertyColumn Property="@(d => d.FechaDevolucion)" Title="Fecha Devolucion" Format="yyyy-MM-dd" Sortable="true" />
+
+
+                @*Opciones*@
+                <TemplateColumn Title="Opciones">
+                    <div class="d-flex gap-2">
+                        <a href="/Devolucion/Edit/@context.DevolucionId" class="btn btn-warning">Editar</a>
+                        <div class="d-flex gap-2">
+                            <a href="/Devolucion/Delete/@context.DevolucionId" class="btn btn-danger">Eliminar</a>
+                        </div>
+                    </div>
+                </TemplateColumn>
+            </QuickGrid>
+        </div>
+
+        @*Footer*@
+        <div class="card-footer d-flex justify-content-between">
+            <p class="mb-0"><strong>Cantidad: </strong>@Devoluciones.Count</p>
+            <p class="mb-0"><strong>Promedio: </strong>@(Devoluciones.Count == 0 ? 0 : @Devoluciones.Average(d => d.FechaDevolucion.DayNumber - d.Prestamo.FechaPrestamo.DayNumber))</p>
+        </div>
+    </div>
+</div>
+
+@code
+{
+
+    public List<Devoluciones> Devoluciones { get; set; } = new();
+
+    public string Filtro = "Id";
+    public string ValorFiltro = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Devoluciones = await DevolucionService.GetList(d => true);
+    }
+
+    private async Task Buscar()
+    {
+        if (ValorFiltro.Trim() != "")
+        {
+            if (Filtro == "Id" && int.TryParse(ValorFiltro, out int devolucionId))
+            {
+                Devoluciones = await DevolucionService.GetList(d => d.DevolucionId == devolucionId);
+            }
+            else if (Filtro == "Estudiante")
+            {
+                Devoluciones = await DevolucionService.GetList(d => d.Prestamo.Estudiante.Nombres.Contains(ValorFiltro));
+            }
+            else if (Filtro == "Libro")
+            {
+                Devoluciones = await DevolucionService.GetList(d => d.Prestamo.Libro.Titulo.Contains(ValorFiltro));
+            }
+            else if (Filtro == "FechaPrestamo" && DateOnly.TryParse(ValorFiltro, out DateOnly fechaPrestamo))
+            {
+                Devoluciones = await DevolucionService.GetList(d => d.Prestamo.FechaPrestamo == fechaPrestamo);
+            }
+            else if (Filtro == "FechaDevolucion" && DateOnly.TryParse(ValorFiltro, out DateOnly fechaDevolucion))
+            {
+                Devoluciones = await DevolucionService.GetList(d => d.FechaDevolucion == fechaDevolucion);
+            }
+        }
+        else
+        {
+            Devoluciones = await DevolucionService.GetList(d => true);
+        }
+    }
+}
