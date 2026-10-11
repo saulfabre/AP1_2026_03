@@ -20,7 +20,14 @@ public class DevolucionesServices(IDbContextFactory<Contexto> contextFactory
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
 
-        return await contexto.Devoluciones.Include(d => d.Prestamo).Where(criterio).AsNoTracking().ToListAsync();
+        return await contexto.Devoluciones
+            .Include(d => d.Prestamo)
+            .ThenInclude(p => p.Estudiante)
+            .Include(d => d.Prestamo)
+            .ThenInclude(p => p.Libro)
+            .Where(criterio)
+            .AsNoTracking()
+            .ToListAsync();
     }
 
     public async Task<bool> Existe(int devolucionId)
