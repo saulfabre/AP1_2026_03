@@ -15,6 +15,8 @@ builder.Services.AddScoped<PrestamosServices>();
 
 builder.Services.AddScoped<DevolucionesServices>();
 
+builder.Services.AddScoped<EntradasServices>();
+
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlConStr")));
 
 // Add services to the container.
