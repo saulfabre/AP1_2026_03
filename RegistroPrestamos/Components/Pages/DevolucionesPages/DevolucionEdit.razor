@@ -68,34 +68,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var devolucion = await DevolucionService.Buscar(DevolucionId);
-        if (devolucion == null)
-        {
-            ToastService.ShowWarning("Devolucion no encontrada", "Editar Devolucion");
-            Navigation.NavigateTo("/Devolucion/Index");
-            return;
-        }
-
-        Devolucion = devolucion;
+        Devolucion = (await DevolucionService.Buscar(DevolucionId)).Value ?? new();
     }
 
     private async Task Editar()
     {
-        if (Devolucion == null)
+        if (Devolucion.DevolucionId != DevolucionId)
         {
             ToastService.ShowWarning("Devolucion no encontrada", "Editar Devolucion");
             return;
         }
-        if (await DevolucionService.Modificar(Devolucion))
+        var resultado = await DevolucionService.Guardar(Devolucion);
+        resultado.OnSuccess(() =>
         {
             ToastService.ShowSuccess("Devolucion editada correctamente.", "Editar Devolucion");
             Navigation.NavigateTo("/Devolucion/Index");
-            return;
-        }
-        else
-        {
-            ToastService.ShowError("Error al editar devolucion.", "Editar Devolucion");
-            return;
-        }
+        });
+        resultado.OnFailure(() => ToastService.ShowError("Error al editar devolucion.", "Editar Devolucion"));
     }
 }

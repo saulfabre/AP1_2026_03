@@ -1,8 +1,11 @@
 @page "/Devolucion/Index"
 
+@using System.Linq.Expressions
+@using RegistroPrestamos.Extensors
 @rendermode InteractiveServer
 
 @inject DevolucionesServices DevolucionService
+@inject ToastService ToastService
 
 <PageTitle>Index</PageTitle>
 
@@ -89,37 +92,27 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Devoluciones = await DevolucionService.GetList(d => true);
+        Devoluciones = (await DevolucionService.GetList(d => true)).Value;
     }
 
     private async Task Buscar()
     {
+        Expression<Func<Devoluciones, bool>> criterio = d => true;
         if (ValorFiltro.Trim() != "")
         {
-            if (Filtro == "Id" && int.TryParse(ValorFiltro, out int devolucionId))
+            criterio = Filtro switch
             {
-                Devoluciones = await DevolucionService.GetList(d => d.DevolucionId == devolucionId);
-            }
-            else if (Filtro == "Estudiante")
-            {
-                Devoluciones = await DevolucionService.GetList(d => d.Prestamo.Estudiante.Nombres.Contains(ValorFiltro));
-            }
-            else if (Filtro == "Libro")
-            {
-                Devoluciones = await DevolucionService.GetList(d => d.Prestamo.Libro.Titulo.Contains(ValorFiltro));
-            }
-            else if (Filtro == "FechaPrestamo" && DateOnly.TryParse(ValorFiltro, out DateOnly fechaPrestamo))
-            {
-                Devoluciones = await DevolucionService.GetList(d => d.Prestamo.FechaPrestamo == fechaPrestamo);
-            }
-            else if (Filtro == "FechaDevolucion" && DateOnly.TryParse(ValorFiltro, out DateOnly fechaDevolucion))
-            {
-                Devoluciones = await DevolucionService.GetList(d => d.FechaDevolucion == fechaDevolucion);
-            }
+                "Id" when int.TryParse(ValorFiltro, out var devolucionId) => d => d.DevolucionId == devolucionId,
+                "Estudiante" => d => d.Prestamo.Estudiante.Nombres.ToLower().Contains(ValorFiltro.ToLower()),
+                "Libro" => d => d.Prestamo.Libro.Titulo.ToLower().Contains(ValorFiltro.ToLower()),
+                "FechaPrestamo" when DateOnly.TryParse(ValorFiltro, out var fechaPrestamo) => d => d.Prestamo.FechaPrestamo == fechaPrestamo,
+                "FechaDevolucion" when DateOnly.TryParse(ValorFiltro, out var fechaDevolucion) => d => d.FechaDevolucion == fechaDevolucion,
+                _ => d => true
+            };
         }
-        else
-        {
-            Devoluciones = await DevolucionService.GetList(d => true);
-        }
+
+        var result = await DevolucionService.GetList(criterio);
+        result.OnSuccess(devoluciones => Devoluciones = devoluciones);
+        result.OnFailure(() => ToastService.ShowError("No se pudieron consultar las devoluciones.", "Consulta de Devoluciones"));
     }
 }

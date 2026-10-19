@@ -44,6 +44,55 @@ namespace RegistroPrestamos.Migrations
                     b.ToTable("Devoluciones");
                 });
 
+            modelBuilder.Entity("RegistroPrestamos.Models.Entradas", b =>
+                {
+                    b.Property<int>("EntradaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EntradaId"));
+
+                    b.Property<string>("Concepto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Total")
+                        .HasColumnType("int");
+
+                    b.HasKey("EntradaId");
+
+                    b.ToTable("Entradas");
+                });
+
+            modelBuilder.Entity("RegistroPrestamos.Models.EntradasDetalle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EntradaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LibroId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntradaId");
+
+                    b.HasIndex("LibroId");
+
+                    b.ToTable("EntradasDetalle");
+                });
+
             modelBuilder.Entity("RegistroPrestamos.Models.Estudiantes", b =>
                 {
                     b.Property<int>("EstudianteId")
@@ -86,6 +135,9 @@ namespace RegistroPrestamos.Migrations
                     b.Property<string>("Autor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Prestado")
                         .HasColumnType("bit");
@@ -142,6 +194,25 @@ namespace RegistroPrestamos.Migrations
                     b.Navigation("Prestamo");
                 });
 
+            modelBuilder.Entity("RegistroPrestamos.Models.EntradasDetalle", b =>
+                {
+                    b.HasOne("RegistroPrestamos.Models.Entradas", "Entrada")
+                        .WithMany("Detalles")
+                        .HasForeignKey("EntradaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RegistroPrestamos.Models.Libros", "Libro")
+                        .WithMany()
+                        .HasForeignKey("LibroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Entrada");
+
+                    b.Navigation("Libro");
+                });
+
             modelBuilder.Entity("RegistroPrestamos.Models.Prestamos", b =>
                 {
                     b.HasOne("RegistroPrestamos.Models.Estudiantes", "Estudiante")
@@ -161,6 +232,16 @@ namespace RegistroPrestamos.Migrations
                     b.Navigation("Libro");
                 });
 
+            modelBuilder.Entity("RegistroPrestamos.Models.Entradas", b =>
+                {
+                    b.Navigation("Detalles");
+                });
+
+            modelBuilder.Entity("RegistroPrestamos.Models.Prestamos", b =>
+                {
+                    b.Navigation("Devolucion")
+                        .IsRequired();
+                });
 #pragma warning restore 612, 618
         }
     }

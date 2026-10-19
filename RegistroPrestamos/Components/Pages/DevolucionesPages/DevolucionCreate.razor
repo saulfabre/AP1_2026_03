@@ -78,17 +78,34 @@
     {
         Prestamos = await PrestamoService.GetList(p => !p.Devuelto);
 
-        var devoluciones = await DevolucionService.GetList(d => true);
+        var devoluciones = (await DevolucionService.GetList(d => true)).Value;
         Prestamos = Prestamos.Where(p => devoluciones.All(d => d.PrestamoId != p.PrestamoId)).ToList();
     }
 
     private async Task Guardar()
     {
-        if (await DevolucionService.GetList(d => d.PrestamoId == Devolucion.PrestamoId) is { Count: > 0 })
+        var consultaDuplicadosExitosa = false;
+        var duplicados = false;
+        var duplicadosResult = await DevolucionService.GetList(d => d.PrestamoId == Devolucion.PrestamoId);
+        duplicadosResult.OnSuccess(devoluciones =>
+        {
+            consultaDuplicadosExitosa = true;
+            duplicados = devoluciones.Count > 0;
+        });
+        duplicadosResult.OnFailure(() =>
+            ToastService.ShowError("No se pudo validar si el prestamo ya tiene una devolucion.", "Crear Devolucion"));
+
+        if (!consultaDuplicadosExitosa)
+        {
+            return;
+        }
+
+        if (duplicados)
         {
             ToastService.ShowWarning("El prestamo ya tiene una devolucion registrada.", "Devolucion duplicada");
             return;
         }
+
         var prestamo = Prestamos.FirstOrDefault(p => p.PrestamoId == Devolucion.PrestamoId);
 
         if (prestamo == null)
@@ -96,23 +113,30 @@
             ToastService.ShowWarning("Prestamo no encontrado", "Crear Devolucion");
             return;
         }
-        if (await DevolucionService.Guardar(Devolucion))
+        var resultado = await DevolucionService.Guardar(Devolucion);
+        var guardada = false;
+        resultado.OnSuccess(() => guardada = true);
+        resultado.OnFailure(() => ToastService.ShowError("Error al crear devolucion.", "Crear Devolucion"));
+
+        if (guardada)
         {
             prestamo.Devuelto = true;
-            await PrestamoService.Modificar(prestamo);
+            if (!await PrestamoService.Modificar(prestamo))
+            {
+                ToastService.ShowError("La devolución se guardó, pero no se pudo actualizar el prestamo.", "Crear Devolucion");
+                return;
+            }
 
             prestamo.Libro.Prestado = false;
-            await LibroService.Modificar(prestamo.Libro);
+            if (!await LibroService.Modificar(prestamo.Libro))
+            {
+                ToastService.ShowError("La devolución se guardó, pero no se pudo actualizar el libro.", "Crear Devolucion");
+                return;
+            }
 
             ToastService.ShowSuccess("La devolucion ha sido creada exitosamente.", "Crear Devolucion");
             Devolucion = new Devoluciones();
             Prestamos = await PrestamoService.GetList(p => !p.Devuelto);
-            return;
-        }
-        else
-        {
-            ToastService.ShowError("Error al crear devolucion.", "Crear Devolucion");
-            return;
         }
     }
 }

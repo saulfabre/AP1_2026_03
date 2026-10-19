@@ -16,5 +16,7 @@ public class Libros
     [Required(ErrorMessage = "El año de publicación es obligatorio.")]
     public DateOnly AnoPublicacion { get; set; }
 
+    public int Cantidad { get; set; } = 0;
+
     public bool Prestado { get; set; } = false;
 }
