@@ -10,7 +10,10 @@ const messagesList = document.getElementById("messagesList");
 
 connection.on("ReceiveMessage", (message) => {
   const item = document.createElement("li");
-  item.textContent = `${message.user}: ${message.message}`;
+
+  const fecha = new Date(message.sentAt).toString();
+
+  item.textContent = `${message.user}: ${message.message} - ${fecha}`;
   messagesList.appendChild(item);
 });
 
