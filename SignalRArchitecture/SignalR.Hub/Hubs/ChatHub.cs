@@ -21,5 +21,10 @@ public sealed class ChatHub : Microsoft.AspNetCore.SignalR.Hub
         var chatMessage = new ChatMessage (
             user, message, DateTimeOffset.UtcNow
         );
+
+        await Clients.All.SendAsync(
+            "ReceiveMessage",
+            chatMessage
+        );
     }
 }
