@@ -45,14 +45,13 @@ public class LibrosServices(IDbContextFactory<RegistroPrestamosDbContext> contex
         return await contexto.SaveChangesAsync() > 0;
     }
 
-    async Task<Result> IServiceResult<Libro, int>.Eliminar(int libroId)
+    public async Task<Result> Eliminar (int libroId)
     {
         await using var contexto = await contextFactory.CreateDbContextAsync();
         var eliminado = await contexto.Libros
             .Where(l => l.LibroId == libroId)
             .ExecuteDeleteAsync() > 0;
         return Result.Success(eliminado);
-
     }
 
     public async Task<Result> Guardar(Libro libro)
