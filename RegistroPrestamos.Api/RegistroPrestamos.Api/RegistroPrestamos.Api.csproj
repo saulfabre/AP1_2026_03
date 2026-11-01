@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RegistroPrestamos.Data\RegistroPrestamos.Data.csproj" />
+    <ProjectReference Include="..\RegistroPrestamos.Services\RegistroPrestamos.Services.csproj" />
   </ItemGroup>
 
 </Project>
