@@ -16,4 +16,8 @@
     <ProjectReference Include="..\RegistroPrestamos.Services\RegistroPrestamos.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

@@ -17,7 +17,7 @@ public partial class Prestamo
 
     public bool Devuelto { get; set; }
 
-    public virtual Devolucione? Devolucione { get; set; }
+    public virtual Devoluciones? Devoluciones { get; set; }
 
     public virtual Estudiante Estudiante { get; set; } = null!;
 

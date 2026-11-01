@@ -11,7 +11,7 @@ public partial class RegistroPrestamosDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Devolucione> Devoluciones { get; set; }
+    public virtual DbSet<Devoluciones> Devoluciones { get; set; }
 
     public virtual DbSet<Entrada> Entradas { get; set; }
 
@@ -25,13 +25,13 @@ public partial class RegistroPrestamosDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Devolucione>(entity =>
+        modelBuilder.Entity<Devoluciones>(entity =>
         {
             entity.HasKey(e => e.DevolucionId);
 
             entity.HasIndex(e => e.PrestamoId, "IX_Devoluciones_PrestamoId").IsUnique();
 
-            entity.HasOne(d => d.Prestamo).WithOne(p => p.Devolucione).HasForeignKey<Devolucione>(d => d.PrestamoId);
+            entity.HasOne(d => d.Prestamo).WithOne(p => p.Devoluciones).HasForeignKey<Devoluciones>(d => d.PrestamoId);
         });
 
         modelBuilder.Entity<EntradasDetalle>(entity =>
