@@ -1,12 +1,17 @@
 using Microsoft.EntityFrameworkCore;
 using RegistroPrestamos.Data;
+using RegistroPrestamos.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+
+builder.Services.AddScoped<LibrosServices>();
 
 builder.Services.AddDbContextFactory<RegistroPrestamosDbContext>(o =>
  o.UseSqlServer(
@@ -23,6 +28,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapControllers();
 
 app.Run();
 
