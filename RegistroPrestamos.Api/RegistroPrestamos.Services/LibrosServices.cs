@@ -58,7 +58,7 @@ public class LibrosServices(IDbContextFactory<RegistroPrestamosDbContext> contex
     {
        if (!await Existe(libro.LibroId))
         {
-            return Result.Success(libro);
+            return Result.Success(await Insertar(libro));
         }
         else
         {
