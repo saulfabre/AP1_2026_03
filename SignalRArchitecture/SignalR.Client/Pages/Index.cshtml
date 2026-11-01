@@ -1,0 +1,30 @@
+﻿@*Estructura de la página*@
+@page
+@{
+    ViewData["Title"] = "SignalR Chat";
+}
+<h1>Chat en tiempo real</h1>
+
+@*Campo de usuario*@
+<div>
+    <label for="userInput">Usuario</label>
+    <input id="userInput" maxlength="40" />
+</div>
+
+@*Campo de mensaje*@
+<div>
+    <label for="messageInput">Mensaje</label>
+    <input id="messageInput" maxlength="1000" />
+</div>
+
+@*Botón y estado*@
+<button id="sendButton" disabled>
+    Enviar
+</button>
+<p id="status">Conectando...</p>
+
+@*Lista y scripts*@
+<ul id="messagesList"></ul>
+<script src="~/js/signalr/dist/browser/signalr.min.js">
+</script>
+<script src="~/js/chat.js"></script>
