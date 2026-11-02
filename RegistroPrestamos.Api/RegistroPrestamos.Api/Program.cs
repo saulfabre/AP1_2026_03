@@ -12,6 +12,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<LibrosServices>();
+builder.Services.AddScoped<EstudiantesServices>();
 
 builder.Services.AddDbContextFactory<RegistroPrestamosDbContext>(o =>
  o.UseSqlServer(
